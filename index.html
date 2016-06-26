@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- TODO: ORGANIZE THIS -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A map of all the fun stuff to do in Austin, Texas.">
+    <meta name="author" content="Brian Albin">
+    <title>Fun In Austin</title>
+    <script src="js/libs/jquery.min.js"></script>
+    <script src="js/libs/knockout-3.2.0.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
+        <!-- TODO: Move this? -->
+    <script src="js/script.js"></script>
+</head>
+<body>
+
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                <li class="sidebar-brand">
+                    <a href="#">
+                        Fun In Austin!
+                    </a>
+                </li>
+                <li>
+                    <a href="#">Dashboard</a>
+                </li>
+                <li>
+                    <a href="#">Shortcuts</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <form id="form-container" class="form-container">
+                            <label for="street">Street: </label><input type="text" id="street" value="">
+                            <label for="city">City: </label><input type="text" id="city" value="">
+                            <button id="submit-btn">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <hr>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2 id="greeting" class="greeting">Where do you want to live?</h2>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 wikipedia-container">
+                        <h3 id="wikipedia-header">Relevant Wikipedia Links</h3>
+                        <ul id="wikipedia-links">Type in an address above and find relevant Wikipedia articles here!</ul>
+                    </div>
+                    <div class="col-md-6 nytimes-container">
+                        <h3 id="nytimes-header">New York Times Articles</h3>
+                        <ul id="nytimes-articles" class="article-list">What's going on in your new city? Enter an address and hit submit and the NY Times will tell you here!</ul>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div id="googleMap" class="col-md-12" style="height: 800px; background-color: blue;">
+                    </div>
+                </div>
+
+                <!--
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
+                    </div>
+                </div>
+                -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Toggle Script -->
+    <!--
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+    -->
+
+</body>
+</html>
