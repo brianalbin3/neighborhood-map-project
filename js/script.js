@@ -73,34 +73,6 @@ function loadData() {
 };
 
 $('#form-container').submit(loadData);
-/*
-Map.prototype.render = function() {
-
-    var map;
-    var lat, lon;
-
-    var geocoder =  new google.maps.Geocoder();
-
-    var addr = this.city + ", " + this.state;
-    console.log(addr);
-
-    geocoder.geocode( { "address": addr}, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            lat = results[0].geometry.location.lat()
-            lon = results[0].geometry.location.lng();
-            var mapProp = {
-                center: new google.maps.LatLng(lat,lon),
-                zoom: 11,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            };
-            map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
-        }
-        else {
-            alert("Something got wrong " + status); // TODO: IMPROOVE THIS
-        }
-    });
-}
-*/
 
 
 var Location = function(name, streetNo, streetName, city, state) {
@@ -150,7 +122,7 @@ Map.prototype._addLocationMarkers = function () {
                 self._createMapMarker(results[0]);
             }
             else {
-                //TODO: ERROR HANDLING
+                $("#googleMap").html("<h1>Oh noes! Could not load google maps!</h1>");
             }
         });
     });
@@ -177,9 +149,8 @@ Map.prototype._createMapMarker = function(placeData) {
       content: name
     });
 
-    // hmmmm, I wonder what this is about...
     google.maps.event.addListener(marker, 'click', function() {
-      // your code goes here!
+        //TODO Interact with foursquare API, set marker color, etc
     });
 
     // this is where the pin actually gets added to the map.
@@ -202,12 +173,18 @@ Map.prototype.render = function() {
     window.mapBounds = new google.maps.LatLngBounds(); //TODO: WTF DOES THIS EVEN DO?
 
     this._addLocationMarkers();
+};
+
+Map.prototype.resizeMap = function() {
+    var center = this.map.getCenter();
+    google.maps.event.trigger(this.map, "resize");
+    this.map.setCenter(center);
 }
 
-
+var mainMap;
 
 window.addEventListener('load', function() {
-    var mainMap = new Map("Austin", "Texas", "googleMap");
+    mainMap = new Map("Austin", "Texas", "googleMap");
     mainMap.addLocation("The Domain", "11410", "Century Oaks Terrace", "Austin", "Texas");
     mainMap.render();
 });

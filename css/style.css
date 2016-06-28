@@ -7,6 +7,5 @@ body {background-color: #CCC;}
     display: inline-block;
     background-image: url('../img/hamburger-icon.svg');
     background-repeat: no-repeat;
-    background-position: 50%;
     /* transparent */
 }

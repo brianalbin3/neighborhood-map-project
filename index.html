@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- TODO: ORGANIZE THIS -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A map of all the fun stuff to do in Austin, Texas.">
     <meta name="author" content="Brian Albin">
     <title>Fun In Austin</title>
-    <script src="js/libs/jquery.min.js"></script>
-    <script src="js/libs/knockout-3.2.0.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="css/style.css">
     <link href="css/simple-sidebar.css" rel="stylesheet">
+    <script src="js/libs/jquery.min.js"></script>
+    <script src="js/libs/knockout-3.2.0.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
         <!-- TODO: Move this? -->
     <script src="js/script.js"></script>
@@ -37,7 +36,6 @@
         </div>
         <div id="page-content-wrapper">
             <div class="container-fluid">
-
                 <div class="row">
                     <div class="col-md-12">
                         <div class="hamburger-icon" id="menu-toggle"></div>
@@ -45,17 +43,21 @@
                 </div>
 
                 <div class="row">
-                    <div id="googleMap" class="col-md-12" style="height: 800px; background-color: blue;">
+                    <div class="col-md-12">
+                        <div id="googleMap" class="col-md-12" style="height: 800px; background-color: #CCC"></div>
                     </div>
                 </div>
 
-                <!--
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
+                        <br />
+                        <div style="background-color: white; width: 210px; height: 24px; border-radius: 5px; text-align: center;">
+                            <input type="text" style="outline: none; border: none; display: inline-block;">
+                            <img src="img/magnifyingglass.svg" alt="search" style="display: inline-block; cursor: pointer;">
+                        </div>
                     </div>
                 </div>
-                -->
+
             </div>
         </div>
     </div>
@@ -65,6 +67,14 @@
     $("#menu-toggle").click(function(e) {
         e.preventDefault();
         $("#wrapper").toggleClass("toggled");
+
+        // TODO: FIGURE OUT HOW TO RESIZE THE MAP WHEN AN ANIMATION COMPLETES, USING A TIMEOUT IS HELLA HACKY
+        // TODO: http://stackoverflow.com/questions/2087510/callback-on-css-transition
+        if ( $("#wrapper").hasClass("toggled") ) {
+            setTimeout(function(){
+                mainMap.resizeMap();
+            }, 1000);
+        }
     });
     </script>
 
