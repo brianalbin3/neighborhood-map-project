@@ -1,15 +1,34 @@
-var funLocations = {
-  "locations": [
+
+var funLocations = [
     { "name": "The Domain", "streetNo": "11410", "streetName": "Century Oaks Terrace", "city": "Austin", "state": "Texas" },
     { "name": "Barton Springs Pool", "streetNo": "2101", "streetName": "Barton Springs Rd", "city": "Austin", "state": "Texas" },
     { "name": "Lady Bird Lake Trail", "streetNo": "", "streetName": "", "city": "Austin", "state": "Texas" },
     { "name": "Game Over Video Games", "streetNo": "3005", "streetName": "S Lamar Blvd", "city": "Austin", "state": "Texas" },
     { "name": "Alamo Drafthouse Cinema", "streetNo": "2700", "streetName": "W Anderson Ln", "city": "Austin", "state": "Texas" }
-  ]
+  ];
+
+
+var Location = function(data) {
+    this.name = ko.observable(data.name);
+    //console.log(data.name) //Gets all the correct names...
 };
 
-var Map = function(containerId) {
+var ViewModel = function() {
+    var self = this;
 
+    this.locationList = ko.observableArray([]);
+
+    funLocations.forEach(function(locationItem){
+        self.locationList.push( new Location(locationItem) );
+        console.log(locationItem)
+    });
+
+    console.log(this.locationList().length);
+};
+
+ko.applyBindings( new ViewModel() );
+
+var Map = function(containerId) {
     this.container = document.getElementById(containerId);
     this.map;
 };
@@ -21,7 +40,7 @@ Map.prototype._addLocationMarkers = function () {
     var service = new google.maps.places.PlacesService(this.map);
 
     // Iterates through the array of locations, creates a search object for each location
-    funLocations.locations.forEach(function(location){
+    funLocations.forEach(function(location){
         // the search request object
 
         var locationQuery;
