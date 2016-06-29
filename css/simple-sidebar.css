@@ -52,7 +52,7 @@
 
 .sidebar-nav {
     position: absolute;
-    top: 0;
+    top: 40px;
     width: 250px;
     margin: 0;
     padding: 0;

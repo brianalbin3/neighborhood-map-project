@@ -7,23 +7,27 @@ var funLocations = [
     { "name": "Alamo Drafthouse Cinema", "streetNo": "2700", "streetName": "W Anderson Ln", "city": "Austin", "state": "Texas" }
   ];
 
-
-var Location = function(data) {
-    this.name = ko.observable(data.name);
-    //console.log(data.name) //Gets all the correct names...
-};
-
 var ViewModel = function() {
     var self = this;
+
+    self.currentFilter = ko.observable("");
 
     this.locationList = ko.observableArray([]);
 
     funLocations.forEach(function(locationItem){
-        self.locationList.push( new Location(locationItem) );
-        console.log(locationItem)
+        self.locationList.push( locationItem );
     });
 
-    console.log(this.locationList().length);
+    self.filterLocations = ko.computed(function () {
+        if (!self.currentFilter()) {
+            return self.locationList();
+        }
+        else {
+            return ko.utils.arrayFilter(self.locationList(), function (locationItem) {
+                return locationItem.name.toLowerCase().includes(self.currentFilter().toLowerCase());
+            });
+        }
+    });
 };
 
 ko.applyBindings( new ViewModel() );

@@ -19,7 +19,12 @@
     <!-- TODO: MOVE THESE -->
     <div id="wrapper">
         <div id="sidebar-wrapper">
-            <ul class="sidebar-nav" data-bind="foreach: locationList">
+            <div style="background-color: white; width: 210px; height: 24px; border-radius: 5px; text-align: center; position: absolute; top: 10px; left: 20px;">
+                <input type="text" data-bind="textInput: currentFilter" style="outline: none; border: none; display: inline-block;">
+                <img src="img/magnifyingglass.svg" alt="Find" style="display: inline-block;">
+            </div>
+
+            <ul class="sidebar-nav" data-bind="foreach: filterLocations">
                 <li>
                     <a href="#" data-bind="text: name"></a>
                 </li>
@@ -57,18 +62,6 @@
                 <div class="row">
                     <div class="col-md-12">
                         <br />
-                        <div style="background-color: white; width: 210px; height: 24px; border-radius: 5px; text-align: center;">
-                            <input type="text" style="outline: none; border: none; display: inline-block;">
-                            <img src="img/magnifyingglass.svg" alt="Find" style="display: inline-block; cursor: pointer;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <ul data-bind="foreach: locationList">
-                            <li data-bind="text: name"></li>
-                        </ul>
                     </div>
                 </div>
 
