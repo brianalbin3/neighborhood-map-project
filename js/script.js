@@ -1,107 +1,18 @@
-
-function loadData() {
-
-    var $body = $('body');
-    var $wikiElem = $('#wikipedia-links');
-    var $nytHeaderElem = $('#nytimes-header');
-    var $nytElem = $('#nytimes-articles');
-    var $greeting = $('#greeting');
-
-    // clear out old data before new request
-    $wikiElem.text("");
-    $nytElem.text("");
-
-    var streetStr = $('#street').val();
-    var cityStr = $('#city').val();
-    var address = streetStr + ", " + cityStr;
-
-    var streetView = "http://maps.googleapis.com/maps/api/streetview?size=600x400&location=" + address;
-
-    var img = "<img class='bgimg' src='" + streetView + "'>";
-
-    $body.append(img);
-
-    var nytURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + cityStr + "&sort=newest&api-key=21194f3076904c6a8341f5ca054555a0";
-    $.getJSON( nytURL, function( data ) {
-        var numArticles = data.response.docs.length;
-
-        var articleURL;
-        var leadParagraph;
-        var headline;
-
-        var listItem = "<li class='article'></li>";
-        var articleLink;
-        var articleParagraph;
-
-        $nytHeaderElem.text("New York Times Articles About " + cityStr);
-
-        for (var i = 0; i < numArticles; i++) {
-            articleURL = data.response.docs[i].web_url;
-            headline = data.response.docs[i].headline.main;
-            snippet = data.response.docs[i].snippet;
-
-            $nytElem.append("<li class='article'>" + "<a href='" + articleURL + "'>" + headline + "</a>" + "<p>" + snippet + "</p>" + "</li>");
-        }
-    }).error(function(e) {
-        $nytHeaderElem.text("New York Times Articles Could Not Be Loaded");
-    });
-
-    var wikiURL = "http://en.wikipedia.org/w/api.php?action=opensearch&search=" + cityStr + "&format=json&callback=wikiCallback";
-
-    var wikiRequestTimeout = setTimeout(function() {
-        $wikiElem.text("failed to get wikipedia resources");
-    }, 8000);
-
-    $.ajax({
-        url: wikiURL,
-        dataType: "jsonp",
-        success: function( response ) {
-            var articleList = response[1];
-
-            for (var i = 0; i < articleList.length; i++) {
-                articleStr = articleList[i];
-                var url = "http://en.wikipedia.org/wiki/" + articleStr;
-                $wikiElem.append("<li><a href='" + url + "'>" + articleStr + "</a></li>");
-            };
-
-            clearTimeout(wikiRequestTimeout);
-        }
-    });
-
-
-    return false;
+var funLocations = {
+  "locations": [
+    { "name": "The Domain", "streetNo": "11410", "streetName": "Century Oaks Terrace", "city": "Austin", "state": "Texas" },
+    { "name": "Barton Springs Pool", "streetNo": "2101", "streetName": "Barton Springs Rd", "city": "Austin", "state": "Texas" },
+    { "name": "Lady Bird Lake Trail", "streetNo": "", "streetName": "", "city": "Austin", "state": "Texas" },
+    { "name": "Game Over Video Games", "streetNo": "3005", "streetName": "S Lamar Blvd", "city": "Austin", "state": "Texas" },
+    { "name": "Alamo Drafthouse Cinema", "streetNo": "2700", "streetName": "W Anderson Ln", "city": "Austin", "state": "Texas" }
+  ]
 };
 
-$('#form-container').submit(loadData);
-
-
-var Location = function(name, streetNo, streetName, city, state) {
-    this.name = name;   //TODO: REMOVE THIS MAYBE?
-    this.streetNo = streetNo;
-    this.streetName = streetName;
-    this.city = city;
-    this.state = state;
-};
-
-Location.prototype.getFormattedLocation = function() {
-    return this.streetNo + " " + this.streetName + " " + this.city + ", " + this.state;
-}
-
-var Map = function(city, state, containerId) {
-    this.city = city;
-    this.state = state;
+var Map = function(containerId) {
 
     this.container = document.getElementById(containerId);
-
-    this.locations = [];
-
     this.map;
 };
-
-Map.prototype.addLocation = function(name, streetNo, streetName, city, state) {
-    var newLoc = new Location(name, streetNo, streetName, city, state);
-    this.locations.push(newLoc);
-}
 
 Map.prototype._addLocationMarkers = function () {
     var self = this; //TODO: THIS IS HACKY
@@ -110,10 +21,20 @@ Map.prototype._addLocationMarkers = function () {
     var service = new google.maps.places.PlacesService(this.map);
 
     // Iterates through the array of locations, creates a search object for each location
-    this.locations.forEach(function(location){
+    funLocations.locations.forEach(function(location){
         // the search request object
+
+        var locationQuery;
+
+        if ( location.streetNo == "" || location.streetName == "" ) {
+            locationQuery = location.name + " " + location.city + ", " + location.state;
+        }
+        else {
+            locationQuery = location.streetNo + " " + location.streetName + " " + location.city + ", " + location.state;
+        }
+
         var request = {
-            query: location.getFormattedLocation()
+            query: locationQuery
         };
 
         // Actually searches the Google Maps API for location data and calls createMapMarker with the results
@@ -151,6 +72,9 @@ Map.prototype._createMapMarker = function(placeData) {
 
     google.maps.event.addListener(marker, 'click', function() {
         //TODO Interact with foursquare API, set marker color, etc
+        console.log(marker);
+
+        var title = marker.title;
     });
 
     // this is where the pin actually gets added to the map.
@@ -184,7 +108,6 @@ Map.prototype.resizeMap = function() {
 var mainMap;
 
 window.addEventListener('load', function() {
-    mainMap = new Map("Austin", "Texas", "googleMap");
-    mainMap.addLocation("The Domain", "11410", "Century Oaks Terrace", "Austin", "Texas");
+    mainMap = new Map("googleMap");
     mainMap.render();
 });
