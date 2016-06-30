@@ -10,7 +10,7 @@ var funLocations = [
 var ViewModel = function() {
     var self = this;
 
-    self.currentFilter = ko.observable("");
+    self.filter = ko.observable("");
 
     this.locationList = ko.observableArray([]);
 
@@ -19,12 +19,18 @@ var ViewModel = function() {
     });
 
     self.filterLocations = ko.computed(function () {
-        if (!self.currentFilter()) {
+        if (!self.filter()) {
+            if ( mainMap != undefined) { // MAP NOT YET LOADED
+                mainMap.setAllMarkersVisible(true);
+            }
+
             return self.locationList();
         }
         else {
             return ko.utils.arrayFilter(self.locationList(), function (locationItem) {
-                return locationItem.name.toLowerCase().includes(self.currentFilter().toLowerCase());
+                var show = locationItem.name.toLowerCase().includes(self.filter().toLowerCase())
+                mainMap.setMarkerVisible(locationItem.name, show);
+                return show;
             });
         }
     });
@@ -33,8 +39,14 @@ var ViewModel = function() {
 ko.applyBindings( new ViewModel() );
 
 var Map = function(containerId) {
+
     this.container = document.getElementById(containerId);
     this.map;
+
+    this.markers = [];
+
+    this._DESELECTED_MARKER_ICON = "https://www.google.com/mapfiles/marker.png";
+    this._SELECTED_MARKER_ICON = "https://www.google.com/mapfiles/marker_green.png";
 };
 
 Map.prototype._addLocationMarkers = function () {
@@ -63,7 +75,7 @@ Map.prototype._addLocationMarkers = function () {
         // Actually searches the Google Maps API for location data and calls createMapMarker with the results
         service.textSearch(request,  function(results, status) {
             if (status == google.maps.places.PlacesServiceStatus.OK) {
-                self._createMapMarker(results[0]);
+                self._createMapMarker(results[0], location);
             }
             else {
                 $("#googleMap").html("<h1>Oh noes! Could not load google maps!</h1>");
@@ -72,19 +84,23 @@ Map.prototype._addLocationMarkers = function () {
     });
 };
 
-Map.prototype._createMapMarker = function(placeData) {
+Map.prototype._createMapMarker = function(result, location) {
     // The next lines save location data from the search result object to local variables
-    var lat = placeData.geometry.location.lat();  // latitude from the place service
-    var lon = placeData.geometry.location.lng();  // longitude from the place service
-    var name = placeData.formatted_address;   // name of the place from the place service
+    var lat = result.geometry.location.lat();  // latitude from the place service
+    var lon = result.geometry.location.lng();  // longitude from the place service
+    //var name = result.formatted_address;   // name of the place from the place service
+    var name = location.name;
     var bounds = window.mapBounds;            // current boundaries of the map window          // TODO: PROBLEM!?!?!?!??!?!?!??!?!
 
     // marker is an object with additional data about the pin for a single location
     var marker = new google.maps.Marker({
-      map: this.map,                                                                                // TODO: THIS.MAP?
-      position: placeData.geometry.location,
-      title: name
+      map: this.map,
+      position: result.geometry.location,
+      title: name,
+      icon: this._DESELECTED_MARKER_ICON
     });
+
+    this.markers.push(marker);
 
     // infoWindows are the little helper windows that open when you click
     // or hover over a pin on a map. They usually contain more information
@@ -94,11 +110,9 @@ Map.prototype._createMapMarker = function(placeData) {
     });
 
     google.maps.event.addListener(marker, 'click', function() {
-        //TODO Interact with foursquare API, set marker color, etc
-        console.log(marker);
-
-        var title = marker.title;
-    });
+        //var title = marker.getTitle();
+        this._setActiveMarker(marker);
+    }.bind(this));
 
     // this is where the pin actually gets added to the map.
     // bounds.extend() takes in a map location object
@@ -126,6 +140,57 @@ Map.prototype.resizeMap = function() {
     var center = this.map.getCenter();
     google.maps.event.trigger(this.map, "resize");
     this.map.setCenter(center);
+}
+
+Map.prototype._getMarkerByTitle = function(markerTitle) {
+    var numMarkers = this.markers.length;
+    for (var i = 0; i < numMarkers; i++ ) {
+        if ( this.markers[i].getTitle() == markerTitle ) {
+            return this.markers[i];
+        }
+    }
+
+    return null;
+}
+
+//TODO: WILL FAIL IF MAP IS NOT LOADED
+Map.prototype.setAllMarkersVisible = function(makeVisible) {
+    var numMarkers = this.markers.length;
+
+    for (var i = 0; i < numMarkers; i++) {
+        this.markers[i].setVisible(makeVisible);
+    }
+}
+
+//TODO: WILL FAIL IF MAP IS NOT LOADED
+Map.prototype.setMarkerVisible = function(markerTitle, isVisible) {
+    var marker = this._getMarkerByTitle(markerTitle);
+
+    if ( marker != null ) {
+        marker.setVisible(isVisible);
+    }
+}
+
+//TODO: WILL FAIL IF MAP IS NOT LOADED
+Map.prototype.setActiveMarker = function(markerTitle) {
+    var marker = this._getMarkerByTitle(markerTitle);
+
+    if ( marker != null ) {
+        this._setActiveMarker(marker);
+    }
+}
+
+//TODO: WILL FAIL IF MAP IS NOT LOADED
+Map.prototype._setActiveMarker = function(marker) {
+    var numMarkers = this.markers.length;
+
+    for (var i = 0; i < numMarkers; i++) {
+        this.markers[i].setIcon(this._DESELECTED_MARKER_ICON);
+    }
+
+    marker.setIcon(this._SELECTED_MARKER_ICON);
+
+    console.log(marker)
 }
 
 var mainMap;

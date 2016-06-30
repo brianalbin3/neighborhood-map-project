@@ -10,17 +10,15 @@
     <link rel="stylesheet" href="css/style.css">
     <link href="css/simple-sidebar.css" rel="stylesheet">
     <script src="js/libs/jquery.min.js"></script>
-
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="http://maps.googleapis.com/maps/api/js?libraries=places"></script>
-
 </head>
 <body>
     <!-- TODO: MOVE THESE -->
     <div id="wrapper">
         <div id="sidebar-wrapper">
             <div style="background-color: white; width: 210px; height: 24px; border-radius: 5px; text-align: center; position: absolute; top: 10px; left: 20px;">
-                <input type="text" data-bind="textInput: currentFilter" style="outline: none; border: none; display: inline-block;">
+                <input type="text" data-bind="textInput: filter" style="outline: none; border: none; display: inline-block;">
                 <img src="img/magnifyingglass.svg" alt="Find" style="display: inline-block;">
             </div>
 
