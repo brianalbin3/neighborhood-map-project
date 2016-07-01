@@ -12,11 +12,28 @@ var ViewModel = function() {
 
     self.filter = ko.observable("");
 
-    this.locationList = ko.observableArray([]);
+    self.currentLocation = ko.observable("The Domain"); //TODO: Make this reference fun locations element
+    console.log(self.currentLocation())
+
+    self.locationList = ko.observableArray([]);
 
     funLocations.forEach(function(locationItem){
         self.locationList.push( locationItem );
     });
+
+    self.setActiveLocation = function(data, event) {
+        //console.log(data);
+        //console.log(event);
+        //console.log(event.target);
+        //console.log(event.target.id)
+        var target = (event.currentTarget) ? event.currentTarget : event.srcElement;
+        //target.innerHTML = "test";
+        //console.log(target)
+        //console.log(target.id)
+        //console.log(event.id)
+        mainMap.setActiveMarker(data.name);
+        self.currentLocation(data.name);
+    };
 
     self.filterLocations = ko.computed(function () {
         if (!self.filter()) {
@@ -189,8 +206,6 @@ Map.prototype._setActiveMarker = function(marker) {
     }
 
     marker.setIcon(this._SELECTED_MARKER_ICON);
-
-    console.log(marker)
 }
 
 var mainMap;
