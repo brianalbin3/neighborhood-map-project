@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A map of all the fun stuff to do in Austin, Texas.">
+    <meta name="description" content="A map of fun stuff to do in Austin, Texas.">
     <meta name="author" content="Brian Albin">
     <title>Fun In Austin</title>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
@@ -24,7 +24,7 @@
 
             <ul class="sidebar-nav" data-bind="foreach: filterLocations">
                 <li data-bind="click: $parent.setActiveLocation">
-                    <a href="#" data-bind="text: name, style: { fontWeight: $parent.currentLocation() == name ? 'bolder' : 'normal', color: $parent.currentLocation() == name ? 'white' : '' }"></a>
+                    <a href="#" data-bind="text: name, style: { fontWeight: $parent.currentLocation().location.name == name ? '' : 'normal', color: $parent.currentLocation().location.name == name ? 'white' : '' }"></a>
                 </li>
             </ul>
             <!--

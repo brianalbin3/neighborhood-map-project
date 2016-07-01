@@ -1,38 +1,44 @@
-
-var funLocations = [
+var LocationModel = {
+    locations: [
     { "name": "The Domain", "streetNo": "11410", "streetName": "Century Oaks Terrace", "city": "Austin", "state": "Texas" },
     { "name": "Barton Springs Pool", "streetNo": "2101", "streetName": "Barton Springs Rd", "city": "Austin", "state": "Texas" },
     { "name": "Lady Bird Lake Trail", "streetNo": "", "streetName": "", "city": "Austin", "state": "Texas" },
     { "name": "Game Over Video Games", "streetNo": "3005", "streetName": "S Lamar Blvd", "city": "Austin", "state": "Texas" },
     { "name": "Alamo Drafthouse Cinema", "streetNo": "2700", "streetName": "W Anderson Ln", "city": "Austin", "state": "Texas" }
-  ];
+  ]
+};
+
+var currLocation = { "location": { "name": "" } }; //TODO: SORT OF HACKY, FIX LATER
+
+
+var getCurrentLocationByName = function(name) {
+    var numLocations = LocationModel.locations.length;
+
+    for ( var i = 0; i < numLocations; i++ ) {
+        if ( LocationModel.locations[i].name == name )
+            return LocationModel.locations[i];
+    }
+
+    return null;
+}
 
 var ViewModel = function() {
     var self = this;
 
     self.filter = ko.observable("");
 
-    self.currentLocation = ko.observable("The Domain"); //TODO: Make this reference fun locations element
-    console.log(self.currentLocation())
+    self.currentLocation = ko.observable(currLocation);
 
     self.locationList = ko.observableArray([]);
 
-    funLocations.forEach(function(locationItem){
+    LocationModel.locations.forEach(function(locationItem){
         self.locationList.push( locationItem );
     });
 
     self.setActiveLocation = function(data, event) {
-        //console.log(data);
-        //console.log(event);
-        //console.log(event.target);
-        //console.log(event.target.id)
-        var target = (event.currentTarget) ? event.currentTarget : event.srcElement;
-        //target.innerHTML = "test";
-        //console.log(target)
-        //console.log(target.id)
-        //console.log(event.id)
         mainMap.setActiveMarker(data.name);
-        self.currentLocation(data.name);
+
+        self.currentLocation( { location: data } )
     };
 
     self.filterLocations = ko.computed(function () {
@@ -53,7 +59,8 @@ var ViewModel = function() {
     });
 };
 
-ko.applyBindings( new ViewModel() );
+var vm = new ViewModel();
+ko.applyBindings( vm );
 
 var Map = function(containerId) {
 
@@ -73,7 +80,7 @@ Map.prototype._addLocationMarkers = function () {
     var service = new google.maps.places.PlacesService(this.map);
 
     // Iterates through the array of locations, creates a search object for each location
-    funLocations.forEach(function(location){
+    LocationModel.locations.forEach(function(location){
         // the search request object
 
         var locationQuery;
@@ -127,7 +134,9 @@ Map.prototype._createMapMarker = function(result, location) {
     });
 
     google.maps.event.addListener(marker, 'click', function() {
-        //var title = marker.getTitle();
+        var loc =  getCurrentLocationByName(marker.getTitle());
+        vm.currentLocation( {location: loc} );
+
         this._setActiveMarker(marker);
     }.bind(this));
 
