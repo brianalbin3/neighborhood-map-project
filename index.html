@@ -24,7 +24,7 @@
 
             <ul class="sidebar-nav" data-bind="foreach: filterLocations">
                 <li data-bind="click: $parent.setActiveLocation">
-                    <a href="#" data-bind="text: name, style: { fontWeight: $parent.currentLocation().location.name == name ? '' : 'normal', color: $parent.currentLocation().location.name == name ? 'white' : '' }"></a>
+                    <a href="#" data-bind="text: name, style: { fontWeight: $parent.currentLocation().location.name == name ? 'bolder' : 'normal', color: $parent.currentLocation().location.name == name ? 'white' : '' }"></a>
                 </li>
             </ul>
             <!--
