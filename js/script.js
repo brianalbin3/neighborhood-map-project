@@ -9,7 +9,7 @@ var Location = function(name, streetNo, streetName, city, state) {
 
 Location.prototype.getFormattedAddress = function() {
     return this.streetNo + " " + this.streetName + ", " + this.city + ", " + this.state;
-}
+};
 
 var FourSquareLocationInfo = function(name, city, state) {
     this.name = name;
@@ -28,16 +28,16 @@ var FourSquareLocationInfo = function(name, city, state) {
     $.getJSON(fourSquareURL)
     .success( function(data) {
         var venue = data.response.venues[0];
+
         this.name = venue.name;
-        if (venue.contact.phone != undefined )
-            this.phone = venue.contact.phone;
+        this.phone = venue.contact.phone;
         this.twitter = venue.contact.twitter;
         this.facebookUsername = venue.contact.facebookUsername;
 
         var numCategories = venue.categories.length;
         for (var i = 0; i < numCategories; i++) {
             this.categories.push(venue.categories[i].name);
-        };
+        }
 
         this.website = venue.url;
     }.bind(this))
@@ -46,7 +46,7 @@ var FourSquareLocationInfo = function(name, city, state) {
         this.twitter = "Could not connect to FourSquare...";
         this.facebookUsername = "Could not connect to FourSquare...";
         this.website = "Could not connect to FourSquare...";
-    }.bind(this))
+    }.bind(this));
 };
 
 var LocationModel = {
@@ -86,12 +86,12 @@ var ViewModel = function() {
         mainMap.setActiveMarker(data.name);
         mainMap.setActiveInfoWindow(data.name);
 
-        self.currentLocation( { location: data } )
+        self.currentLocation( { location: data } );
     };
 
     self.filterLocations = ko.computed(function () {
         if (!self.filter()) {
-            if ( mainMap != undefined) { // MAP NOT YET LOADED
+            if ( mainMap !== undefined) { // MAP NOT YET LOADED
                 mainMap.setAllMarkersVisible(true);
             }
 
@@ -99,7 +99,7 @@ var ViewModel = function() {
         }
         else {
             return ko.utils.arrayFilter(self.locationList(), function (locationItem) {
-                var show = locationItem.name.toLowerCase().includes(self.filter().toLowerCase())
+                var show = locationItem.name.toLowerCase().includes(self.filter().toLowerCase());
                 mainMap.setMarkerVisible(locationItem.name, show);
                 return show;
             });
@@ -114,14 +114,14 @@ var MapLocation = function(name, marker, infoWindow) { //TODO: Get rid of name a
     this.name = name;
     this.marker = marker;
     this.infoWindow = infoWindow;
-}
+};
 
 var Map = function(containerId) {
 
     this.container = document.getElementById(containerId);
     this.map;
 
-    this.mapLocations = []
+    this.mapLocations = [];
 
     this._DESELECTED_MARKER_ICON = "https://www.google.com/mapfiles/marker.png";
     this._SELECTED_MARKER_ICON = "https://www.google.com/mapfiles/marker_green.png";
@@ -132,7 +132,7 @@ Map.prototype.render = function() {
         disableDefaultUI: true
     };
 
-    this.map = new google.maps.Map(document.querySelector('#googleMap'), mapOptions);
+    this.map = new google.maps.Map(document.getElementById("googleMap"), mapOptions);
 
     window.mapBounds = new google.maps.LatLngBounds();
 
@@ -156,7 +156,7 @@ Map.prototype.setAllMarkersVisible = function(makeVisible) {
 Map.prototype.setMarkerVisible = function(markerTitle, isVisible) {
     var marker = this._getMarkerByTitle(markerTitle);
 
-    if ( marker != null ) {
+    if ( marker !== null ) {
         marker.setVisible(isVisible);
     }
 };
@@ -164,10 +164,9 @@ Map.prototype.setMarkerVisible = function(markerTitle, isVisible) {
 Map.prototype.setActiveMarker = function(markerTitle) {
     var marker = this._getMarkerByTitle(markerTitle);
 
-    if ( marker != null ) {
+    if ( marker !== null ) {
         this._setActiveMarker(marker);
     }
-    console.log(marker)
 };
 
 Map.prototype.setActiveInfoWindow = function(locationName) {
@@ -183,10 +182,10 @@ Map.prototype.setActiveInfoWindow = function(locationName) {
         }
     }
 
-    if ( mapLocation != null ) {
+    if ( mapLocation !== null ) {
         mapLocation.infoWindow.open(this.map, mapLocation.marker);
     }
-}
+};
 
 Map.prototype._setActiveMarker = function(marker) {
     var numMapLocations = this.mapLocations.length;
@@ -207,7 +206,7 @@ Map.prototype._addLocationMarkers = function () {
 
         var locationQuery;
 
-        if ( location.streetNo == "" || location.streetName == "" ) {
+        if ( location.streetNo === "" || location.streetName === "" ) {
             locationQuery = location.name + " " + location.city + ", " + location.state;
         }
         else {
@@ -243,27 +242,25 @@ Map.prototype._createMapMarker = function(result, location) {
       icon: this._DESELECTED_MARKER_ICON
     });
 
-    var location = LocationModel.getLocationByName(marker.getTitle());
-
     var infoWindowContent = "<div>" +
                                 "<h1 class='infoWindowHeader'>" + location.name + "</h1>" +
                                 "<div>" +
                                     "<span class='infoWindowIcon'>" + "Address: " + "</span>" +
                                     "<span>" + location.getFormattedAddress()  + "</span>" +
                                 "</div>";
-    if ( location.fourSquareInfo.phone != undefined ) {
+    if ( location.fourSquareInfo.phone !== undefined ) {
             infoWindowContent += "<div>" +
                                     "<span class='infoWindowIcon'>" + "Phone: " + "</span>" +
                                     "<span>" + location.fourSquareInfo.phone + "</span>" +
                                 "</div>";
     }
-    if ( location.fourSquareInfo.twitter != undefined ) {
+    if ( location.fourSquareInfo.twitter !== undefined ) {
            infoWindowContent += "<div>" +
                                     "<span class='infoWindowIcon'>" + "Twitter: " + "</span>" +
                                     "<span>www.twitter.com/" + location.fourSquareInfo.twitter + "</span>" +
                                 "</div>";
     }
-    if ( location.fourSquareInfo.facebookUsername != undefined ) {
+    if ( location.fourSquareInfo.facebookUsername !== undefined ) {
            infoWindowContent += "<div>" +
                                     "<span class='infoWindowIcon'>" + "Facebook: " + "</span>" +
                                     "<span>www.facebook.com/" + location.fourSquareInfo.facebookUsername + "</span>" +
@@ -275,7 +272,7 @@ Map.prototype._createMapMarker = function(result, location) {
                                     "<span>" + "" + "</span>" +
                                 "</div>" +
 */
-    if ( location.fourSquareInfo.website != undefined ) {
+    if ( location.fourSquareInfo.website !== undefined ) {
         infoWindowContent += "<div>" +
                                     "<span class='infoWindowIcon'>" + "Website: " + "</span>" +
                                     "<span>" + location.fourSquareInfo.website + "</span>" +
@@ -289,12 +286,10 @@ Map.prototype._createMapMarker = function(result, location) {
 
     this.mapLocations.push(new MapLocation(name, marker, infoWindow ) );
 
-    google.maps.event.addListener(marker, 'click', function() {
+    google.maps.event.addListener(marker, "click", function() {
         vm.currentLocation( { location: location } );
 
         this._setActiveMarker(marker);  //TODO: Should maybe use a callback
-
-        console.log(marker.getTitle());
 
         this._closeAllInfoWindows();
 
@@ -323,11 +318,11 @@ Map.prototype._closeAllInfoWindows = function() {
     for (var i = 0; i < numMapLocations; i++) {
         this.mapLocations[i].infoWindow.close();
     }
-}
+};
 
 var mainMap;
 
-window.addEventListener('load', function() {
+window.addEventListener("load", function() {
     mainMap = new Map("googleMap");
     mainMap.render();
 });
