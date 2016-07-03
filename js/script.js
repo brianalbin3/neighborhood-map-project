@@ -1,33 +1,83 @@
-var LocationModel = {
-    locations: [
-    { "name": "The Domain", "streetNo": "11410", "streetName": "Century Oaks Terrace", "city": "Austin", "state": "Texas" },
-    { "name": "Barton Springs Pool", "streetNo": "2101", "streetName": "Barton Springs Rd", "city": "Austin", "state": "Texas" },
-    { "name": "Lady Bird Lake Trail", "streetNo": "", "streetName": "", "city": "Austin", "state": "Texas" },
-    { "name": "Game Over Video Games", "streetNo": "3005", "streetName": "S Lamar Blvd", "city": "Austin", "state": "Texas" },
-    { "name": "Alamo Drafthouse Cinema", "streetNo": "2700", "streetName": "W Anderson Ln", "city": "Austin", "state": "Texas" }
-  ]
+var Location = function(name, streetNo, streetName, city, state) {
+    this.name = name;
+    this.streetNo = streetNo;
+    this.streetName = streetName;
+    this.city = city;
+    this.state = state;
+    this.fourSquareInfo = new FourSquareLocationInfo(name, city, state);
 };
 
-var currLocation = { "location": { "name": "" } }; //TODO: SORT OF HACKY, FIX LATER
-
-
-var getCurrentLocationByName = function(name) {
-    var numLocations = LocationModel.locations.length;
-
-    for ( var i = 0; i < numLocations; i++ ) {
-        if ( LocationModel.locations[i].name == name )
-            return LocationModel.locations[i];
-    }
-
-    return null;
+Location.prototype.getFormattedAddress = function() {
+    return this.streetNo + " " + this.streetName + " " + this.city + ", " + this.state;
 }
+
+var FourSquareLocationInfo = function(name, city, state) {
+    this.name = name;
+    this.city = city;
+    this.state = state;
+
+    this.name;
+    this.phone;
+    this.twitter;
+    this.facebookUsername;
+    this.categories = [];
+    this.website;
+
+    var fourSquareURL = "https://api.foursquare.com/v2/venues/search?near=" + this.city +", "+ this.state +
+                        "&query="+ this.name +"&limit=1&oauth_token=FSOWT50BEYQIEETU5RHQHFVEIYBG3LFIZWJKU24U254RFTWA&v=20160701"; //TODO: PROPER OAUTH TOKEN
+
+
+    $.getJSON(fourSquareURL)
+    .success( function(data) {
+        var venue = data.response.venues[0];
+        this.name = venue.name;
+        this.phone = venue.contact.phone;
+        this.twitter = venue.contact.twitter;
+        this.facebookUsername = venue.contact.facebookUsername;
+
+        var numCategories = venue.categories.length;
+        for (var i = 0; i < numCategories; i++) {
+            this.categories.push(venue.categories[i].name);
+        };
+
+        this.website = venue.url;
+    }.bind(this))
+    .error( function() {
+        //TODO: SOME SORT OF ERROR HANDLING
+    }.bind(this))
+};
+
+var test = new FourSquareLocationInfo("The Domain", "Austin", "Texas");
+setTimeout(function() { console.log(test.website) }, 2500);
+
+
+var LocationModel = {
+    locations: [ //new Location("The Domain", "11410", "Century Oaks Terrace", "Austin", "Texas"),
+                 new Location("Barton Springs Pool", "2101", "Barton Springs Rd", "Austin", "Texas"),
+                 //new Location("Lady Bird Lake Trail", "", "", "Autin", "Texas"),
+                 new Location("Game Over Video Games", "3005", "S Lamar Blvd", "Austin", "Texas"),
+                 new Location("Pinballz Arcade", "", "", "Austin", "Texas"),
+                 //new Location("", "", "", "Austin", "Texas")
+                 new Location("Alamo Drafthouse Cinema", "2700", "W Anderson Ln", "Austin", "Texas")
+    ],
+    getLocationByName: function(name) {
+        var numLocations = this.locations.length;
+
+        for ( var i = 0; i < numLocations; i++ ) {
+            if ( this.locations[i].name == name )
+                return this.locations[i];
+        }
+
+        return null;
+    }
+};
 
 var ViewModel = function() {
     var self = this;
 
     self.filter = ko.observable("");
 
-    self.currentLocation = ko.observable(currLocation);
+    self.currentLocation = ko.observable({ "location": { "name": "" } });
 
     self.locationList = ko.observableArray([]);
 
@@ -73,6 +123,63 @@ var Map = function(containerId) {
     this._SELECTED_MARKER_ICON = "https://www.google.com/mapfiles/marker_green.png";
 };
 
+Map.prototype.render = function() {
+    var mapOptions = {
+        disableDefaultUI: true
+    };
+
+    this.map = new google.maps.Map(document.querySelector('#googleMap'), mapOptions);
+
+    // Sets the boundaries of the map based on pin locations
+    window.mapBounds = new google.maps.LatLngBounds(); //TODO: WTF DOES THIS EVEN DO?
+
+    this._addLocationMarkers();
+};
+
+Map.prototype.resizeMap = function() {
+    var center = this.map.getCenter();
+    google.maps.event.trigger(this.map, "resize");
+    this.map.setCenter(center);
+};
+
+//TODO: WILL FAIL IF MAP IS NOT LOADED
+Map.prototype.setAllMarkersVisible = function(makeVisible) {
+    var numMarkers = this.markers.length;
+
+    for (var i = 0; i < numMarkers; i++) {
+        this.markers[i].setVisible(makeVisible);
+    }
+};
+
+//TODO: WILL FAIL IF MAP IS NOT LOADED
+Map.prototype.setMarkerVisible = function(markerTitle, isVisible) {
+    var marker = this._getMarkerByTitle(markerTitle);
+
+    if ( marker != null ) {
+        marker.setVisible(isVisible);
+    }
+};
+
+//TODO: WILL FAIL IF MAP IS NOT LOADED
+Map.prototype.setActiveMarker = function(markerTitle) {
+    var marker = this._getMarkerByTitle(markerTitle);
+
+    if ( marker != null ) {
+        this._setActiveMarker(marker);
+    }
+};
+
+//TODO: WILL FAIL IF MAP IS NOT LOADED
+Map.prototype._setActiveMarker = function(marker) {
+    var numMarkers = this.markers.length;
+
+    for (var i = 0; i < numMarkers; i++) {
+        this.markers[i].setIcon(this._DESELECTED_MARKER_ICON);
+    }
+
+    marker.setIcon(this._SELECTED_MARKER_ICON);
+};
+
 Map.prototype._addLocationMarkers = function () {
     var self = this; //TODO: THIS IS HACKY
     // creates a Google place search service object. PlacesService does the work of
@@ -81,7 +188,6 @@ Map.prototype._addLocationMarkers = function () {
 
     // Iterates through the array of locations, creates a search object for each location
     LocationModel.locations.forEach(function(location){
-        // the search request object
 
         var locationQuery;
 
@@ -89,7 +195,7 @@ Map.prototype._addLocationMarkers = function () {
             locationQuery = location.name + " " + location.city + ", " + location.state;
         }
         else {
-            locationQuery = location.streetNo + " " + location.streetName + " " + location.city + ", " + location.state;
+            locationQuery = location.getFormattedAddress();
         }
 
         var request = {
@@ -126,47 +232,57 @@ Map.prototype._createMapMarker = function(result, location) {
 
     this.markers.push(marker);
 
-    // infoWindows are the little helper windows that open when you click
-    // or hover over a pin on a map. They usually contain more information
-    // about a location.
+    var location = LocationModel.getLocationByName(marker.getTitle());
+
+    var infoWindowContent = "<div>" +
+                                "<h1 class='infoWindowHeader'>" + location.name + "</h1>" +
+                                "<div>" +
+                                    "<span class='infoWindowIcon'>" + "Address: " + "</span>" +
+                                    "<span>" + location.getFormattedAddress()  + "</span>" +
+                                "</div>" +
+                                "<div>" +
+                                    "<span class='infoWindowIcon'>" + "Phone: " + "</span>" +
+                                    "<span>" + location.fourSquareInfo.phone + "</span>" +
+                                "</div>" +
+                                "<div>" +
+                                    "<span class='infoWindowIcon'>" + "Twitter: " + "</span>" +
+                                    "<span>" + location.fourSquareInfo.twitter + "</span>" +
+                                "</div>" +
+                                "<div>" +
+                                    "<span class='infoWindowIcon'>" + "Facebook: " + "</span>" +
+                                    "<span>" + location.fourSquareInfo.facebookUsername + "</span>" +
+                                "</div>" +
+/*
+                                "<div>" +
+                                    "<span class='infoWindowIcon'>" + "Categories" + "</span>" +
+                                    "<span>" + "" + "</span>" +
+                                "</div>" +
+*/
+                                "<div>" +
+                                    "<span class='infoWindowIcon'>" + "URL: " + "</span>" +
+                                    "<span>" + location.fourSquareInfo.website + "</span>" +
+                                "</div>" +
+                             "</div>";
+
     var infoWindow = new google.maps.InfoWindow({
-      content: name
+      content: infoWindowContent
     });
 
     google.maps.event.addListener(marker, 'click', function() {
-        var loc =  getCurrentLocationByName(marker.getTitle());
-        vm.currentLocation( {location: loc} );
+        var loc =  LocationModel.getLocationByName(marker.getTitle());
+        vm.currentLocation( { location: loc } );
 
-        this._setActiveMarker(marker);
+        this._setActiveMarker(marker);  //TODO: Should maybe use a callback
+
+        infoWindow.open(this.map, marker);
     }.bind(this));
 
     // this is where the pin actually gets added to the map.
     // bounds.extend() takes in a map location object
     bounds.extend(new google.maps.LatLng(lat, lon));
-    // fit the map to the new marker
-    this.map.fitBounds(bounds);                                             // TODO: ONLY CALL THIS AT END OF RENDER?
-    // center the map
-    this.map.setCenter(bounds.getCenter());                                 // TODO: ONLY CALL THIS AT END OF RENDER?
-}
-
-Map.prototype.render = function() {
-    var mapOptions = {
-        disableDefaultUI: true
-    };
-
-    this.map = new google.maps.Map(document.querySelector('#googleMap'), mapOptions);
-
-    // Sets the boundaries of the map based on pin locations
-    window.mapBounds = new google.maps.LatLngBounds(); //TODO: WTF DOES THIS EVEN DO?
-
-    this._addLocationMarkers();
+    this.map.fitBounds(bounds);
+    this.map.setCenter(bounds.getCenter());
 };
-
-Map.prototype.resizeMap = function() {
-    var center = this.map.getCenter();
-    google.maps.event.trigger(this.map, "resize");
-    this.map.setCenter(center);
-}
 
 Map.prototype._getMarkerByTitle = function(markerTitle) {
     var numMarkers = this.markers.length;
@@ -177,45 +293,7 @@ Map.prototype._getMarkerByTitle = function(markerTitle) {
     }
 
     return null;
-}
-
-//TODO: WILL FAIL IF MAP IS NOT LOADED
-Map.prototype.setAllMarkersVisible = function(makeVisible) {
-    var numMarkers = this.markers.length;
-
-    for (var i = 0; i < numMarkers; i++) {
-        this.markers[i].setVisible(makeVisible);
-    }
-}
-
-//TODO: WILL FAIL IF MAP IS NOT LOADED
-Map.prototype.setMarkerVisible = function(markerTitle, isVisible) {
-    var marker = this._getMarkerByTitle(markerTitle);
-
-    if ( marker != null ) {
-        marker.setVisible(isVisible);
-    }
-}
-
-//TODO: WILL FAIL IF MAP IS NOT LOADED
-Map.prototype.setActiveMarker = function(markerTitle) {
-    var marker = this._getMarkerByTitle(markerTitle);
-
-    if ( marker != null ) {
-        this._setActiveMarker(marker);
-    }
-}
-
-//TODO: WILL FAIL IF MAP IS NOT LOADED
-Map.prototype._setActiveMarker = function(marker) {
-    var numMarkers = this.markers.length;
-
-    for (var i = 0; i < numMarkers; i++) {
-        this.markers[i].setIcon(this._DESELECTED_MARKER_ICON);
-    }
-
-    marker.setIcon(this._SELECTED_MARKER_ICON);
-}
+};
 
 var mainMap;
 

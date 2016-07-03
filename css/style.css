@@ -1,4 +1,7 @@
-body {background-color: #CCC;}
+body {
+    background-color: #CCC;
+    height: 100%;
+}
 
 .hamburger-icon {
     width: 38px;
@@ -7,5 +10,13 @@ body {background-color: #CCC;}
     display: inline-block;
     background-image: url('../img/hamburger-icon.svg');
     background-repeat: no-repeat;
-    /* transparent */
+}
+
+.infoWindowHeader {
+    font-size: 24px;
+}
+
+/* TODO: GET THIS WORKING */;
+.infoWindowIcon {
+    margin-right: 50px;
 }
