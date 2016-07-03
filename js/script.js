@@ -243,8 +243,6 @@ Map.prototype._createMapMarker = function(result, location) {
       icon: this._DESELECTED_MARKER_ICON
     });
 
-    //this.markers.push(marker);
-
     var location = LocationModel.getLocationByName(marker.getTitle());
 
     var infoWindowContent = "<div>" +
@@ -288,8 +286,6 @@ Map.prototype._createMapMarker = function(result, location) {
     var infoWindow = new google.maps.InfoWindow({
       content: infoWindowContent
     });
-
-    //this.infoWindows.push(infoWindow);
 
     this.mapLocations.push(new MapLocation(name, marker, infoWindow ) );
 
