@@ -11,9 +11,14 @@ body {
     width: 38px;
     height: 38px;
     cursor: pointer;
-    display: inline-block;
     background-image: url('../img/hamburger-icon.svg');
     background-repeat: no-repeat;
+}
+
+.pageHeader {
+    text-align: center;
+    margin-top: 0;
+    margin-left: -16.7%; /*This isn't quite right*/
 }
 
 .infoWindowHeader {
