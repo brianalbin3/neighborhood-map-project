@@ -7,6 +7,9 @@ var Location = function(name, streetNo, streetName, city, state) {
     this.city = city;
     this.state = state;
     this.fourSquareInfo = new FourSquareLocationInfo(name, city, state);
+
+    this.marker = null;
+    this.infoWindow = null;
 };
 
 Location.prototype.getFormattedAddress = function() {
@@ -108,12 +111,12 @@ var ViewModel = function() {
                 var show = locName.toLowerCase().includes(self.filter().toLowerCase());
 
                 if ( locName == self.currentLocation().location.name ) {
-                    mainMap.setMarkerInactive(locName);
+                    mainMap.setLocationMarkerInactive(locName);
                     mainMap.hideLocationInfoWindow(locName);
                     self.currentLocation({ 'location': { 'name': '' } });
                 }
 
-                mainMap.setMarkerVisible(locName, show);
+                mainMap.setLocationMarkerVisible(locName, show);
 
                 return show;
             });
@@ -123,18 +126,10 @@ var ViewModel = function() {
 
 var vm = new ViewModel();
 
-var MapLocation = function(name, marker, infoWindow) { //TODO: Get rid of name and make this.mapLocations a hashmap
-    this.name = name;
-    this.marker = marker;
-    this.infoWindow = infoWindow;
-};
-
 var Map = function(containerId) {
 
     this.container = document.getElementById(containerId);
     this.map;
-
-    this.mapLocations = [];
 
     this._DESELECTED_MARKER_ICON = 'https://www.google.com/mapfiles/marker.png';
     this._SELECTED_MARKER_ICON = 'https://www.google.com/mapfiles/marker_green.png';
@@ -159,23 +154,26 @@ Map.prototype.resizeMap = function() {
 };
 
 Map.prototype.setAllMarkersVisible = function(makeVisible) {
-    var numMapLocations = this.mapLocations.length;
 
-    for (var i = 0; i < numMapLocations; i++) {
-        this.mapLocations[i].marker.setVisible(makeVisible);
+    var numLocations = LocationModel.locations.length;
+
+    for (var i = 0; i < numLocations; i++) {
+        LocationModel.locations[i].marker.setVisible(makeVisible);
     }
 };
 
-Map.prototype.setMarkerVisible = function(markerTitle, isVisible) {
-    var marker = this._getMarkerByTitle(markerTitle);
+Map.prototype.setLocationMarkerVisible = function(locationName, isVisible) {
+    var location = LocationModel.getLocationByName(locationName).marker;
+    var marker = location.marker;
 
     if ( marker !== null ) {
         marker.setVisible(isVisible);
     }
 };
 
-Map.prototype.setActiveMarker = function(markerTitle) {
-    var marker = this._getMarkerByTitle(markerTitle);
+Map.prototype.setActiveMarker = function(locationName) {
+    var location = LocationModel.getLocationByName(locationName).marker;
+    var marker = location.marker;
 
     if ( marker !== null ) {
         this._setActiveMarker(marker);
@@ -185,48 +183,32 @@ Map.prototype.setActiveMarker = function(markerTitle) {
 Map.prototype.setActiveInfoWindow = function(locationName) {
     this._closeAllInfoWindows();
 
-    var mapLocation = null;
+    var location = LocationModel.getLocationByName(locationName);
 
-    var numMapLocations = this.mapLocations.length;
-    for (var i = 0; i < numMapLocations; i++) {
-        if ( this.mapLocations[i].name == locationName ) {
-            mapLocation = this.mapLocations[i];
-            break;
-        }
-    }
-
-    if ( mapLocation !== null ) {
-        mapLocation.infoWindow.open(this.map, mapLocation.marker);
+    if ( location !== null ) {
+        location.infoWindow.open(this.map, location.marker);
     }
 };
 
 Map.prototype.hideLocationInfoWindow = function(locationName) {
-    var mapLocation = null;
+    var location = LocationModel.getLocationByName(locationName);
 
-    var numMapLocations = this.mapLocations.length;
-    for (var i = 0; i < numMapLocations; i++) {
-        if ( this.mapLocations[i].name === locationName ) {
-            mapLocation = this.mapLocations[i];
-            break;
-        }
-    }
-
-    if ( mapLocation !== null ) {
-        mapLocation.infoWindow.close();
+    if ( location !== null ) {
+        location.infoWindow.close();
     }
 };
 
-Map.prototype.setMarkerInactive = function(locationName) {
-    var marker = this._getMarkerByTitle(locationName);
+Map.prototype.setLocationMarkerInactive = function(locationName) {
+    var location = LocationModel.getLocationByName(locationName);
+    var marker = location.marker;
 
     marker.setIcon(this._DESELECTED_MARKER_ICON);
 };
 
 Map.prototype._setActiveMarker = function(marker) {
-    var numMapLocations = this.mapLocations.length;
-
-    for (var i = 0; i < numMapLocations; i++) {
-        this.mapLocations[i].marker.setIcon(this._DESELECTED_MARKER_ICON);
+    var numLocations = LocationModel.locations.length;
+    for (var i = 0; i < numLocations; i++) {
+        LocationModel.locations[i].marker.setIcon(this._DESELECTED_MARKER_ICON);
     }
 
     marker.setIcon(this._SELECTED_MARKER_ICON);
@@ -312,11 +294,12 @@ Map.prototype._createMapMarker = function(result, location) {
       content: infoWindowContent
     });
 
-    this.mapLocations.push(new MapLocation(name, marker, infoWindow ) );
+    location.marker = marker;
+    location.infoWindow = infoWindow;
 
     google.maps.event.addListener(marker, 'click', function() {
         vm.currentLocation( { location: location } );
-
+        console.log("click event listener function")
         this._setActiveMarker(marker);  //TODO: Should maybe use a callback
 
         this._closeAllInfoWindows();
@@ -329,22 +312,11 @@ Map.prototype._createMapMarker = function(result, location) {
     this.map.setCenter(bounds.getCenter());
 };
 
-Map.prototype._getMarkerByTitle = function(markerTitle) {
-    var numMapLocations = this.mapLocations.length;
-    for (var i = 0; i < numMapLocations; i++ ) {
-        if ( this.mapLocations[i].marker.getTitle() == markerTitle ) {
-            return this.mapLocations[i].marker;
-        }
-    }
-
-    return null;
-};
-
 Map.prototype._closeAllInfoWindows = function() {
-    var numMapLocations = this.mapLocations.length;
+    var numLocations = LocationModel.locations.length;
 
-    for (var i = 0; i < numMapLocations; i++) {
-        this.mapLocations[i].infoWindow.close();
+    for (var i = 0; i < numLocations; i++) {
+        LocationModel.locations[i].infoWindow.close();
     }
 };
 
