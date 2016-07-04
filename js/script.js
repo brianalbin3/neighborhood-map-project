@@ -352,4 +352,9 @@ Map.prototype._closeAllInfoWindows = function() {
 function initMap() {
     mainMap = new Map('googleMap');
     mainMap.render();
-}
+};
+
+window.onresize = function()
+    mainMap.resizeMap();
+    mainMap.map.setCenter(mainMap.map.getCenter());
+};

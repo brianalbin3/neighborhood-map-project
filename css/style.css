@@ -7,6 +7,27 @@ body {
     height: 100%;
 }
 
+.search-bar-container {
+    background-color: white;
+    width: 210px;
+    height: 24px;
+    border-radius: 5px;
+    text-align: center;
+    position: absolute;
+    top: 10px;
+    left: 20px;
+}
+
+.search-bar-text-box {
+    outline: none;
+    border: none;
+    display: inline-block;
+}
+
+.search-bar-magnifying-glass {
+    display: inline-block;
+}
+
 .hamburger-icon {
     width: 38px;
     height: 38px;
@@ -15,10 +36,33 @@ body {
     background-repeat: no-repeat;
 }
 
-.pageHeader {
+.header-label {
     text-align: center;
     margin-top: 0;
     margin-left: -16.7%; /*This isn't quite right*/
+}
+
+
+.container-in-page-content-wrapper {
+    height: 100%;
+}
+
+header {
+    height: 5%;
+}
+
+main {
+    height: 95%;
+}
+
+.google-map-wrapper {
+    height: 100%;
+}
+
+.google-map {
+    height: 100%;
+    min-height: 200px;
+    background-color: #CCC
 }
 
 .info-window-header {
