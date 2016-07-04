@@ -48,7 +48,7 @@ body {
 }
 
 header {
-    height: 5%;
+    /*height: 5%;*/
 }
 
 main {
@@ -71,4 +71,23 @@ main {
 
 .info-window-icon {
     margin-right: 50px;
+}
+
+/* Soon as header label is its own row */
+@media screen and (max-width: 991px) {
+    .header-label {
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .header-label {
+        font-size: 28px;
+    }
+}
+
+@media screen and (max-width: 340px) {
+    .header-label {
+        font-size: 24px;
+    }
 }
