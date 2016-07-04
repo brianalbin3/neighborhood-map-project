@@ -122,7 +122,6 @@ var ViewModel = function() {
 };
 
 var vm = new ViewModel();
-ko.applyBindings( vm );
 
 var MapLocation = function(name, marker, infoWindow) { //TODO: Get rid of name and make this.mapLocations a hashmap
     this.name = name;
@@ -206,7 +205,7 @@ Map.prototype.hideLocationInfoWindow = function(locationName) {
 
     var numMapLocations = this.mapLocations.length;
     for (var i = 0; i < numMapLocations; i++) {
-        if ( this.mapLocations[i].name == locationName ) {
+        if ( this.mapLocations[i].name === locationName ) {
             mapLocation = this.mapLocations[i];
             break;
         }
@@ -350,11 +349,12 @@ Map.prototype._closeAllInfoWindows = function() {
 };
 
 function initMap() {
+    ko.applyBindings( vm );
     mainMap = new Map('googleMap');
     mainMap.render();
-};
 
-window.onresize = function()
-    mainMap.resizeMap();
-    mainMap.map.setCenter(mainMap.map.getCenter());
-};
+    window.onresize = function() {
+        mainMap.resizeMap();
+        mainMap.map.setCenter(mainMap.map.getCenter());
+    };
+}
