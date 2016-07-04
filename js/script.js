@@ -92,7 +92,7 @@ var ViewModel = function() {
 
     self.setActiveLocation = function(data, event) {
         mainMap.setActiveMarker(data.name);
-        mainMap.openLocationInfoWindow(data.name);
+        mainMap.openLocationInfoWindowAtLocation(data.name);
 
         self.currentLocation( { location: data } );
     };
@@ -181,7 +181,7 @@ Map.prototype.setActiveMarker = function(locationName) {
     }
 };
 
-Map.prototype.openLocationInfoWindow = function(locationName) { //TODO: Rename this
+Map.prototype.openLocationInfoWindowAtLocation = function(locationName) { //TODO: Rename this
     var location = LocationModel.getLocationByName(locationName);
 
     if ( location !== null ) {
