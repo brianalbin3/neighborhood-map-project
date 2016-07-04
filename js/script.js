@@ -1,3 +1,5 @@
+var mainMap;
+
 var Location = function(name, streetNo, streetName, city, state) {
     this.name = name;
     this.streetNo = streetNo;
@@ -102,8 +104,17 @@ var ViewModel = function() {
         }
         else {
             return ko.utils.arrayFilter(self.locationList(), function (locationItem) {
-                var show = locationItem.name.toLowerCase().includes(self.filter().toLowerCase());
-                mainMap.setMarkerVisible(locationItem.name, show);
+                var locName = locationItem.name;
+                var show = locName.toLowerCase().includes(self.filter().toLowerCase());
+
+                if ( locName == self.currentLocation().location.name ) {
+                    mainMap.setMarkerInactive(locName);
+                    mainMap.hideLocationInfoWindow(locName);
+                    self.currentLocation({ 'location': { 'name': '' } });
+                }
+
+                mainMap.setMarkerVisible(locName, show);
+
                 return show;
             });
         }
@@ -190,6 +201,28 @@ Map.prototype.setActiveInfoWindow = function(locationName) {
     }
 };
 
+Map.prototype.hideLocationInfoWindow = function(locationName) {
+    var mapLocation = null;
+
+    var numMapLocations = this.mapLocations.length;
+    for (var i = 0; i < numMapLocations; i++) {
+        if ( this.mapLocations[i].name == locationName ) {
+            mapLocation = this.mapLocations[i];
+            break;
+        }
+    }
+
+    if ( mapLocation !== null ) {
+        mapLocation.infoWindow.close();
+    }
+};
+
+Map.prototype.setMarkerInactive = function(locationName) {
+    var marker = this._getMarkerByTitle(locationName);
+
+    marker.setIcon(this._DESELECTED_MARKER_ICON);
+};
+
 Map.prototype._setActiveMarker = function(marker) {
     var numMapLocations = this.mapLocations.length;
 
@@ -225,11 +258,11 @@ Map.prototype._addLocationMarkers = function () {
 };
 
 Map.prototype._createMapMarker = function(result, location) {
-    var lat = result.geometry.location.lat();
-    var lon = result.geometry.location.lng();
-    //var name = result.formatted_address;   // name of the place from the place service
-    var name = location.name;
-    var bounds = window.mapBounds;
+    var lat = result.geometry.location.lat(),
+        lon = result.geometry.location.lng(),
+        //name = result.formatted_address;   // name of the place from the place service
+        name = location.name,
+        bounds = window.mapBounds;
 
     var marker = new google.maps.Marker({
       map: this.map,
@@ -315,8 +348,6 @@ Map.prototype._closeAllInfoWindows = function() {
         this.mapLocations[i].infoWindow.close();
     }
 };
-
-var mainMap;
 
 function initMap() {
     mainMap = new Map('googleMap');
