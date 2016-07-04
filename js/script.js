@@ -9,7 +9,7 @@ var Location = function(name, streetNo, streetName, city, state) {
     this.fourSquareInfo = new FourSquareLocationInfo(name, city, state);
 
     this.marker = null;
-    this.infoWindow = null;
+    this.infoWindowContent = null;
 };
 
 Location.prototype.getFormattedAddress = function() {
@@ -92,7 +92,7 @@ var ViewModel = function() {
 
     self.setActiveLocation = function(data, event) {
         mainMap.setActiveMarker(data.name);
-        mainMap.setActiveInfoWindow(data.name);
+        mainMap.openLocationInfoWindow(data.name);
 
         self.currentLocation( { location: data } );
     };
@@ -130,6 +130,7 @@ var Map = function(containerId) {
 
     this.container = document.getElementById(containerId);
     this.map;
+    this.infoWindow = new google.maps.InfoWindow( { content: "" } );
 
     this._DESELECTED_MARKER_ICON = 'https://www.google.com/mapfiles/marker.png';
     this._SELECTED_MARKER_ICON = 'https://www.google.com/mapfiles/marker_green.png';
@@ -163,7 +164,7 @@ Map.prototype.setAllMarkersVisible = function(makeVisible) {
 };
 
 Map.prototype.setLocationMarkerVisible = function(locationName, isVisible) {
-    var location = LocationModel.getLocationByName(locationName).marker;
+    var location = LocationModel.getLocationByName(locationName);
     var marker = location.marker;
 
     if ( marker !== null ) {
@@ -180,22 +181,17 @@ Map.prototype.setActiveMarker = function(locationName) {
     }
 };
 
-Map.prototype.setActiveInfoWindow = function(locationName) {
-    this._closeAllInfoWindows();
-
+Map.prototype.openLocationInfoWindow = function(locationName) { //TODO: Rename this
     var location = LocationModel.getLocationByName(locationName);
 
     if ( location !== null ) {
-        location.infoWindow.open(this.map, location.marker);
+        this.infoWindow.setContent( location.infoWindowContent );
+        this.infoWindow.open(this.map, location.marker);
     }
 };
 
 Map.prototype.hideLocationInfoWindow = function(locationName) {
-    var location = LocationModel.getLocationByName(locationName);
-
-    if ( location !== null ) {
-        location.infoWindow.close();
-    }
+    this.infoWindow.close();
 };
 
 Map.prototype.setLocationMarkerInactive = function(locationName) {
@@ -290,20 +286,16 @@ Map.prototype._createMapMarker = function(result, location) {
                              '</div>';
     }
 
-    var infoWindow = new google.maps.InfoWindow({
-      content: infoWindowContent
-    });
-
     location.marker = marker;
-    location.infoWindow = infoWindow;
+    location.infoWindowContent = infoWindowContent;
 
     google.maps.event.addListener(marker, 'click', function() {
         vm.currentLocation( { location: location } );
         this._setActiveMarker(marker);  //TODO: Should maybe use a callback
 
-        this._closeAllInfoWindows();
+        this.infoWindow.setContent(location.infoWindowContent);
 
-        infoWindow.open(this.map, marker);
+        this.infoWindow.open(this.map, marker);
     }.bind(this));
 
     bounds.extend(new google.maps.LatLng(lat, lon));
@@ -311,12 +303,8 @@ Map.prototype._createMapMarker = function(result, location) {
     this.map.setCenter(bounds.getCenter());
 };
 
-Map.prototype._closeAllInfoWindows = function() {
-    var numLocations = LocationModel.locations.length;
-
-    for (var i = 0; i < numLocations; i++) {
-        LocationModel.locations[i].infoWindow.close();
-    }
+Map.prototype.closeInfoWindow = function() {
+    this.infoWindow.close();
 };
 
 function initMap() {
