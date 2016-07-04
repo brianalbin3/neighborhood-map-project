@@ -272,38 +272,38 @@ Map.prototype._createMapMarker = function(result, location) {
     });
 
     var infoWindowContent = '<div>' +
-                                '<h1 class="infoWindowHeader">' + location.name + '</h1>' +
+                                '<h1 class="info-window-header">' + location.name + '</h1>' +
                                 '<div>' +
-                                    '<span class="infoWindowIcon">' + 'Address: ' + '</span>' +
+                                    '<span class="info-window-icon">' + 'Address: ' + '</span>' +
                                     '<span>' + location.getFormattedAddress()  + '</span>' +
                                 '</div>';
     if ( location.fourSquareInfo.phone !== undefined ) {
             infoWindowContent += '<div>' +
-                                    '<span class="infoWindowIcon">' + 'Phone: ' + '</span>' +
+                                    '<span class="info-window-icon">' + 'Phone: ' + '</span>' +
                                     '<span>' + location.fourSquareInfo.phone + '</span>' +
                                 '</div>';
     }
     if ( location.fourSquareInfo.twitter !== undefined ) {
            infoWindowContent += '<div>' +
-                                    '<span class="infoWindowIcon">' + 'Twitter: ' + '</span>' +
+                                    '<span class="info-window-icon">' + 'Twitter: ' + '</span>' +
                                     '<span><a href="http://www.twitter.com/' + location.fourSquareInfo.twitter + '">www.twitter.com/' + location.fourSquareInfo.twitter + '</a></span>' +
                                 '</div>';
     }
     if ( location.fourSquareInfo.facebookUsername !== undefined ) {
            infoWindowContent += '<div>' +
-                                    '<span class="infoWindowIcon">' + 'Facebook: ' + '</span>' +
+                                    '<span class="info-window-icon">' + 'Facebook: ' + '</span>' +
                                     '<span><a href="http://www.facebook.com/' + location.fourSquareInfo.facebookUsername + '">www.facebook.com/' + location.fourSquareInfo.facebookUsername + '</a></span>' +
                                 '</div>';
     }
 /*
                                 "<div>" +
-                                    "<span class='infoWindowIcon'>" + "Categories" + "</span>" +
+                                    "<span class='info-window-icon'>" + "Categories" + "</span>" +
                                     "<span>" + "" + "</span>" +
                                 "</div>" +
 */
     if ( location.fourSquareInfo.website !== undefined ) {
            infoWindowContent += '<div>' +
-                                    '<span class="infoWindowIcon">' + 'Website: ' + '</span>' +
+                                    '<span class="info-window-icon">' + 'Website: ' + '</span>' +
                                     '<span><a href="' + location.fourSquareInfo.website + '">' + location.fourSquareInfo.website + '</span>' +
                                 '</div>' +
                              '</div>';

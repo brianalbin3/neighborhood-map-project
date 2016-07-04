@@ -21,10 +21,10 @@ body {
     margin-left: -16.7%; /*This isn't quite right*/
 }
 
-.infoWindowHeader {
+.info-window-header {
     font-size: 24px;
 }
 
-.infoWindowIcon {
+.info-window-icon {
     margin-right: 50px;
 }
