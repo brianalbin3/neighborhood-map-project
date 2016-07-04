@@ -172,7 +172,7 @@ Map.prototype.setLocationMarkerVisible = function(locationName, isVisible) {
 };
 
 Map.prototype.setActiveMarker = function(locationName) {
-    var location = LocationModel.getLocationByName(locationName).marker;
+    var location = LocationModel.getLocationByName(locationName);
     var marker = location.marker;
 
     if ( marker !== null ) {
@@ -299,7 +299,6 @@ Map.prototype._createMapMarker = function(result, location) {
 
     google.maps.event.addListener(marker, 'click', function() {
         vm.currentLocation( { location: location } );
-        console.log("click event listener function")
         this._setActiveMarker(marker);  //TODO: Should maybe use a callback
 
         this._closeAllInfoWindows();
