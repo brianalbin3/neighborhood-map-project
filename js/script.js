@@ -99,7 +99,7 @@ var ViewModel = function() {
 
     self.filterLocations = ko.computed(function () {
         if (!self.filter()) {
-            if ( mainMap !== undefined) { // MAP NOT YET LOADED
+            if ( mainMap ) { // MAP NOT YET LOADED
                 mainMap.setAllMarkersVisible(true);
             }
 
@@ -254,22 +254,22 @@ Map.prototype._createMapMarker = function(result, location) {
                                     '<span class="info-window-icon">' + 'Address: ' + '</span>' +
                                     '<span>' + location.getFormattedAddress()  + '</span>' +
                                 '</div>';
-    if ( location.fourSquareInfo.phone !== undefined ) {
+    if ( location.fourSquareInfo.phone ) {
             infoWindowContent += '<div>' +
                                     '<span class="info-window-icon">' + 'Phone: ' + '</span>' +
                                     '<span>' + location.fourSquareInfo.phone + '</span>' +
                                 '</div>';
     }
-    if ( location.fourSquareInfo.twitter !== undefined ) {
+    if ( location.fourSquareInfo.twitter ) {
            infoWindowContent += '<div>' +
                                     '<span class="info-window-icon">' + 'Twitter: ' + '</span>' +
-                                    '<span><a href="http://www.twitter.com/' + location.fourSquareInfo.twitter + '">www.twitter.com/' + location.fourSquareInfo.twitter + '</a></span>' +
+                                    '<span><a href="http://www.twitter.com/' + location.fourSquareInfo.twitter + '" target="_blank">www.twitter.com/' + location.fourSquareInfo.twitter + '</a></span>' +
                                 '</div>';
     }
-    if ( location.fourSquareInfo.facebookUsername !== undefined ) {
+    if ( location.fourSquareInfo.facebookUsername ) {
            infoWindowContent += '<div>' +
                                     '<span class="info-window-icon">' + 'Facebook: ' + '</span>' +
-                                    '<span><a href="http://www.facebook.com/' + location.fourSquareInfo.facebookUsername + '">www.facebook.com/' + location.fourSquareInfo.facebookUsername + '</a></span>' +
+                                    '<span><a href="http://www.facebook.com/' + location.fourSquareInfo.facebookUsername + '" target="_blank">www.facebook.com/' + location.fourSquareInfo.facebookUsername + '</a></span>' +
                                 '</div>';
     }
 /*
@@ -278,10 +278,10 @@ Map.prototype._createMapMarker = function(result, location) {
                                     "<span>" + "" + "</span>" +
                                 "</div>" +
 */
-    if ( location.fourSquareInfo.website !== undefined ) {
+    if ( location.fourSquareInfo.website ) {
            infoWindowContent += '<div>' +
                                     '<span class="info-window-icon">' + 'Website: ' + '</span>' +
-                                    '<span><a href="' + location.fourSquareInfo.website + '">' + location.fourSquareInfo.website + '</span>' +
+                                    '<span><a href="' + location.fourSquareInfo.website + ' target="_blank">' + location.fourSquareInfo.website + '</span>' +
                                 '</div>' +
                              '</div>';
     }

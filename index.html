@@ -13,7 +13,7 @@
 </head>
 <body>
     <div id="wrapper">
-        <div id="sidebar-wrapper">
+        <aside id="sidebar-wrapper">
             <div class="search-bar-container">
                 <input type="text" data-bind="textInput: filter" class="search-bar-text-box">
                 <img src="img/magnifyingglass.svg" alt="Find" class="search-bar-magnifying-glass">
@@ -23,7 +23,7 @@
                     <a href="#" data-bind="text: name, style: { fontWeight: $parent.currentLocation().location.name == name ? 'bolder' : 'normal', color: $parent.currentLocation().location.name == name ? 'white' : '' }"></a>
                 </li>
             </ul>
-        </div>
+        </aside>
         <div id="page-content-wrapper">
             <div class="container-fluid container-in-page-content-wrapper">
                 <header class="row-fluid">
