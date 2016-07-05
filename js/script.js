@@ -228,7 +228,7 @@ Map.prototype._addLocationMarkers = function () {
                 self._createMapMarker(results[0], location);
             }
             else {
-                $('#googleMap').html('<h1>Oh noes! Could not load google maps!</h1>');
+                $('#googleMap').append('<h2>Oh noes! Could not load place data from google maps for ' + location.name +'.</h2>');
             }
         });
     });
@@ -316,4 +316,9 @@ function initMap() {
         mainMap.resizeMap();
         mainMap.map.setCenter(mainMap.map.getCenter());
     };
+}
+
+function googleMapsError() {
+    console.log("googleMapsEror")
+    alert('Oh Noes! Could not load google maps.');
 }
