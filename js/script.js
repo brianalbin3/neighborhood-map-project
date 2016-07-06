@@ -91,6 +91,7 @@ var ViewModel = function() {
     });
 
     self.setActiveLocation = function(data, event) {
+        console.log("setActiveLocation data="+data);
         mainMap.setActiveMarker(data.name);
         mainMap.openLocationInfoWindowAtLocation(data.name);
 
@@ -113,7 +114,10 @@ var ViewModel = function() {
                 if ( locName == self.currentLocation().location.name ) {
                     mainMap.setLocationMarkerInactive(locName);
                     mainMap.hideLocationInfoWindow(locName);
-                    self.currentLocation({ 'location': { 'name': '' } });
+
+                    if ( show === false ) {
+                        self.currentLocation({ 'location': { 'name': '' } });
+                    }
                 }
 
                 mainMap.setLocationMarkerVisible(locName, show);
@@ -319,6 +323,5 @@ function initMap() {
 }
 
 function googleMapsError() {
-    console.log("googleMapsEror")
     alert('Oh Noes! Could not load google maps.');
 }
