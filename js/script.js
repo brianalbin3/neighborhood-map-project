@@ -108,7 +108,7 @@ var ViewModel = function() {
         else {
             return ko.utils.arrayFilter(self.locationList(), function (locationItem) {
                 var locName = locationItem.name;
-                var show = locName.toLowerCase().indexOf(self.filter().toLowerCase()) == -1;
+                var show = locName.toLowerCase().indexOf(self.filter().toLowerCase()) !== -1;
 
                 if ( show === false ) {
                     mainMap.setLocationMarkerInactive(locName);
