@@ -91,7 +91,6 @@ var ViewModel = function() {
     });
 
     self.setActiveLocation = function(data, event) {
-        console.log("setActiveLocation data="+data);
         mainMap.setActiveMarker(data.name);
         mainMap.openLocationInfoWindowAtLocation(data.name);
 
@@ -111,13 +110,14 @@ var ViewModel = function() {
                 var locName = locationItem.name;
                 var show = locName.toLowerCase().includes(self.filter().toLowerCase());
 
-                if ( locName == self.currentLocation().location.name ) {
+                if ( show === false ) {
                     mainMap.setLocationMarkerInactive(locName);
-                    mainMap.hideLocationInfoWindow(locName);
 
-                    if ( show === false ) {
+                    if ( locName == self.currentLocation().location.name ) {
                         self.currentLocation({ 'location': { 'name': '' } });
+                        mainMap.hideLocationInfoWindow(locName);
                     }
+
                 }
 
                 mainMap.setLocationMarkerVisible(locName, show);
@@ -194,7 +194,7 @@ Map.prototype.openLocationInfoWindowAtLocation = function(locationName) { //TODO
     }
 };
 
-Map.prototype.hideLocationInfoWindow = function(locationName) {
+Map.prototype.hideLocationInfoWindow = function() {
     this.infoWindow.close();
 };
 
