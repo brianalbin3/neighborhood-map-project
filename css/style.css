@@ -1,10 +1,14 @@
 html {
     height:100%;
+    padding: 0;
+    margin: 0;
 }
 
 body {
     background-color: #CCC;
     height: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 .search-bar-container {
@@ -29,34 +33,39 @@ body {
 }
 
 .hamburger-icon {
-    width: 38px;
-    height: 38px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
     background-image: url('../img/hamburger-icon.svg');
     background-repeat: no-repeat;
+    max-width: 24px;
 }
 
 .header-label {
-    text-align: center;
+    /*text-align: center;*/
     margin-top: 0;
-    margin-left: -16.7%; /*This isn't quite right*/
+    /*margin-left: -16.7%; */ /*This isn't quite right*/
+    font-size: 24px;
 }
 
 
 .container-in-page-content-wrapper {
+    padding: 0;
     height: 100%;
 }
 
 header {
     /*height: 5%;*/
+    height: 50px;
 }
 
 main {
-    height: 95%;
+    height: calc(100% - 50px);
 }
 
 .google-map-wrapper {
     height: 100%;
+    padding: 0;
 }
 
 .google-map {
@@ -77,17 +86,5 @@ main {
 @media screen and (max-width: 991px) {
     .header-label {
         margin-left: 0;
-    }
-}
-
-@media screen and (max-width: 400px) {
-    .header-label {
-        font-size: 28px;
-    }
-}
-
-@media screen and (max-width: 340px) {
-    .header-label {
-        font-size: 24px;
     }
 }
