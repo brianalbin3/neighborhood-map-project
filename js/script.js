@@ -108,12 +108,12 @@ var ViewModel = function() {
         else {
             return ko.utils.arrayFilter(self.locationList(), function (locationItem) {
                 var locName = locationItem.name;
-                var show = locName.toLowerCase().includes(self.filter().toLowerCase());
+                var show = locName.toLowerCase().indexOf(self.filter().toLowerCase()) == -1;
 
                 if ( show === false ) {
                     mainMap.setLocationMarkerInactive(locName);
 
-                    if ( locName == self.currentLocation().location.name ) {
+                    if ( locName === self.currentLocation().location.name ) {
                         self.currentLocation({ 'location': { 'name': '' } });
                         mainMap.hideLocationInfoWindow(locName);
                     }
@@ -121,7 +121,6 @@ var ViewModel = function() {
                 }
 
                 mainMap.setLocationMarkerVisible(locName, show);
-
                 return show;
             });
         }
