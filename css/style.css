@@ -44,6 +44,7 @@ body {
 .header-label {
     /*text-align: center;*/
     margin-top: 0;
+    margin-bottom: 0;
     /*margin-left: -16.7%; */ /*This isn't quite right*/
     font-size: 24px;
 }
