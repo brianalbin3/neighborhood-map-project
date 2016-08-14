@@ -57,25 +57,20 @@ var FourSquareLocationInfo = function(name, city, state) {
     }.bind(this));
 };
 
-var LocationModel = {
-    locations: [
-                 new Location('Barton Springs Pool', '2101', 'Barton Springs Rd', 'Austin', 'Texas'),
-                 new Location('Game Over Video Games', '3005', 'S Lamar Blvd', 'Austin', 'Texas'),
-                 new Location('Pinballz Arcade', '', '', 'Austin', 'Texas'),
-                 new Location('St. Edward\'s Park', '7301', 'Spicewood Springs Rd', 'Austin', 'Texas'),
-                 new Location('Alamo Drafthouse Cinema', '2700', 'W Anderson Ln', 'Austin', 'Texas')
-    ],
-    getLocationByName: function(name) {
-        var numLocations = this.locations.length;
-
-        for ( var i = 0; i < numLocations; i++ ) {
-            if ( this.locations[i].name == name )
-                return this.locations[i];
-        }
-
-        return null;
-    }
+var LocationModel = function() {
+    this.locations = [];
+    this.locations['Barton Springs Pool'] = new Location('Barton Springs Pool', '2101', 'Barton Springs Rd', 'Austin', 'Texas');
+    this.locations['Game Over Video Games'] = new Location('Game Over Video Games', '3005', 'S Lamar Blvd', 'Austin', 'Texas');
+    this.locations['Pinballz Arcade'] = new Location('Pinballz Arcade', '', '', 'Austin', 'Texas');
+    this.locations['St. Edward\'s Park'] = new Location('St. Edward\'s Park', '7301', 'Spicewood Springs Rd', 'Austin', 'Texas');
+    this.locations['Alamo Drafthouse Cinema'] = new Location('Alamo Drafthouse Cinema', '2700', 'W Anderson Ln', 'Austin', 'Texas');
 };
+
+LocationModel.prototype.getLocationByName = function(name) {
+    return this.locations[name];
+};
+
+var lm = new LocationModel();
 
 var ViewModel = function() {
     var self = this;
@@ -86,13 +81,15 @@ var ViewModel = function() {
 
     self.locationList = ko.observableArray([]);
 
-    LocationModel.locations.forEach(function(locationItem){
-        self.locationList.push( locationItem );
-    });
+    for (var key in lm.locations) {
+        if ( lm.locations.hasOwnProperty(key) ) {
+            self.locationList.push( lm.locations[key] );
+        }
+    }
 
     self.setActiveLocation = function(data, event) {
         mainMap.setActiveMarker(data.name);
-        mainMap.openLocationInfoWindowAtLocation(data.name);
+        mainMap.openInfoWindowAtLocation(data.name);
 
         self.currentLocation( { location: data } );
     };
@@ -158,16 +155,16 @@ Map.prototype.resizeMap = function() {
 };
 
 Map.prototype.setAllMarkersVisible = function(makeVisible) {
+    var location = lm.getLocationByName(locationName);
+    var marker = location.marker;
 
-    var numLocations = LocationModel.locations.length;
-
-    for (var i = 0; i < numLocations; i++) {
-        LocationModel.locations[i].marker.setVisible(makeVisible);
+    if ( marker !== null ) {
+        marker.setVisible(isVisible);
     }
 };
 
 Map.prototype.setLocationMarkerVisible = function(locationName, isVisible) {
-    var location = LocationModel.getLocationByName(locationName);
+    var location = lm.getLocationByName(locationName);
     var marker = location.marker;
 
     if ( marker !== null ) {
@@ -176,7 +173,7 @@ Map.prototype.setLocationMarkerVisible = function(locationName, isVisible) {
 };
 
 Map.prototype.setActiveMarker = function(locationName) {
-    var location = LocationModel.getLocationByName(locationName);
+    var location = lm.getLocationByName(locationName);
     var marker = location.marker;
 
     if ( marker !== null ) {
@@ -184,8 +181,8 @@ Map.prototype.setActiveMarker = function(locationName) {
     }
 };
 
-Map.prototype.openLocationInfoWindowAtLocation = function(locationName) { //TODO: Rename this
-    var location = LocationModel.getLocationByName(locationName);
+Map.prototype.openInfoWindowAtLocation = function(locationName) {
+    var location = lm.getLocationByName(locationName);
 
     if ( location !== null ) {
         this.infoWindow.setContent( location.infoWindowContent );
@@ -198,43 +195,48 @@ Map.prototype.hideLocationInfoWindow = function() {
 };
 
 Map.prototype.setLocationMarkerInactive = function(locationName) {
-    var location = LocationModel.getLocationByName(locationName);
+    var location = lm.getLocationByName(locationName);
     var marker = location.marker;
 
     marker.setIcon(this._DESELECTED_MARKER_ICON);
 };
 
 Map.prototype._setActiveMarker = function(marker) {
-    var numLocations = LocationModel.locations.length;
-    for (var i = 0; i < numLocations; i++) {
-        LocationModel.locations[i].marker.setIcon(this._DESELECTED_MARKER_ICON);
+    for (var key in lm.locations) {
+        if ( lm.locations.hasOwnProperty(key) ) {
+            lm.locations[key].marker.setIcon(this._DESELECTED_MARKER_ICON);
+        }
     }
 
     marker.setIcon(this._SELECTED_MARKER_ICON);
 };
 
 Map.prototype._addLocationMarkers = function () {
-    var self = this; //TODO: SHOULD I MOVE THIS?
+    var self = this;
 
     var service = new google.maps.places.PlacesService(this.map);
 
-    LocationModel.locations.forEach(function(location){
+    for (var key in lm.locations) {
+        if ( lm.locations.hasOwnProperty(key) ) {
+            var location = lm.locations[key];
+            var locationQuery = location.name + ' ' + location.getFormattedAddress();
 
-        var locationQuery = location.name + ' ' + location.getFormattedAddress();
+            var request = {
+                query: locationQuery
+            };
 
-        var request = {
-            query: locationQuery
-        };
-
-        service.textSearch(request,  function(results, status) {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-                self._createMapMarker(results[0], location);
-            }
-            else {
-                $('#googleMap').append('<h2>Oh noes! Could not load place data from google maps for ' + location.name +'.</h2>');
-            }
-        });
-    });
+            (function(loc) {
+                service.textSearch(request, function(results, status) {
+                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                        self._createMapMarker(results[0], loc);
+                    }
+                    else {
+                        $('#googleMap').append('<h2>Oh noes! Could not load place data from google maps for ' + location.name +'.</h2>');
+                    }
+                })
+            })(location);
+        }
+    }
 };
 
 Map.prototype._createMapMarker = function(result, location) {

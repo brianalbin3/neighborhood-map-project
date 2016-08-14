@@ -6,7 +6,7 @@ This is a site that helps you to find fun stuff to do in Austin, Texas.
 
 ## Install
 
-Download from https://github.com/brianalbin3/neighborhood-map-project then open index.html in your web browser.
+Download from [here](https://github.com/brianalbin3/neighborhood-map-project then open index.html in your web browser).
 
 ## How to Use
 
