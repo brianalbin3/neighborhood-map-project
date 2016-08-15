@@ -12,6 +12,11 @@ var Location = function(name, streetNo, streetName, city, state) {
     this.infoWindowContent = null;
 };
 
+/**
+ * Returns the location's formatted address
+ * @return {String} A formatted address of the format
+ *     7921 Rustling Bark Court, Ellicott City, MD OR Ellicott City, Md
+ */
 Location.prototype.getFormattedAddress = function() {
     if ( this.streetNo === '' || this.streetName === '' ) {
         return this.city + ', ' + this.state;
@@ -57,6 +62,14 @@ var FourSquareLocationInfo = function(name, city, state) {
     }.bind(this));
 };
 
+/*
+ * Returns the formatted phone number
+ * @return {String} A the phone number in the format (410) 799-5959
+ */
+FourSquareLocationInfo.prototype.getFormattedPhoneNumber = function() {
+    return "(" + this.phone.substring(0,3) + ") " + this.phone.substring(3,6) + "-" + this.phone.substring(6,10);
+};
+
 var LocationModel = function() {
     this.locations = [];
     this.locations['Barton Springs Pool'] = new Location('Barton Springs Pool', '2101', 'Barton Springs Rd', 'Austin', 'Texas');
@@ -66,6 +79,11 @@ var LocationModel = function() {
     this.locations['Alamo Drafthouse Cinema'] = new Location('Alamo Drafthouse Cinema', '2700', 'W Anderson Ln', 'Austin', 'Texas');
 };
 
+/**
+ * Returns a Location given its name
+ * @param {string} name The name of the location
+ * @return {Location} A Location object with the given name
+ */
 LocationModel.prototype.getLocationByName = function(name) {
     return this.locations[name];
 };
@@ -112,7 +130,7 @@ var ViewModel = function() {
 
                     if ( locName === self.currentLocation().location.name ) {
                         self.currentLocation({ 'location': { 'name': '' } });
-                        mainMap.hideLocationInfoWindow(locName);
+                        mainMap.hideInfoWindow();
                     }
 
                 }
@@ -136,6 +154,9 @@ var Map = function(containerId) {
     this._SELECTED_MARKER_ICON = 'https://www.google.com/mapfiles/marker_green.png';
 };
 
+/**
+ * Displays a map with location markers on the screen
+ */
 Map.prototype.render = function() {
     var mapOptions = {
         disableDefaultUI: true
@@ -148,21 +169,32 @@ Map.prototype.render = function() {
     this._addLocationMarkers();
 };
 
+/**
+ * Resizes the map to use all available space
+ */
 Map.prototype.resizeMap = function() {
     var center = this.map.getCenter();
     google.maps.event.trigger(this.map, 'resize');
     this.map.setCenter(center);
 };
 
+/**
+ * Makes all map markers visible or invisible
+ * @param {boolean} makeVisible True to make all map markers visible, false to make all map markers invisible
+ */
 Map.prototype.setAllMarkersVisible = function(makeVisible) {
-    var location = lm.getLocationByName(locationName);
-    var marker = location.marker;
-
-    if ( marker !== null ) {
-        marker.setVisible(isVisible);
+    for (var key in lm.locations) {
+        if ( lm.locations.hasOwnProperty(key) ) {
+            lm.locations[key].marker.setVisible(makeVisible);
+        }
     }
 };
 
+/**
+ * Shows or hides a location's map marker
+ * @param {string} locationName The name of the location
+ * @param {boolean} isVisible True to make the location visible, false to make it invisible
+ */
 Map.prototype.setLocationMarkerVisible = function(locationName, isVisible) {
     var location = lm.getLocationByName(locationName);
     var marker = location.marker;
@@ -172,6 +204,10 @@ Map.prototype.setLocationMarkerVisible = function(locationName, isVisible) {
     }
 };
 
+/**
+ * Makes the marker at the specified location active and all other markers inactive. (Active markers are green, others are red)
+ * @param {string} locationName The name of the location whose marker is to be made active
+ */
 Map.prototype.setActiveMarker = function(locationName) {
     var location = lm.getLocationByName(locationName);
     var marker = location.marker;
@@ -181,6 +217,10 @@ Map.prototype.setActiveMarker = function(locationName) {
     }
 };
 
+/**
+ * Opens an infoWindow at the location's map marker
+ * @param {string} locationName The name of the location which will have an infoWindow appear at its map marker
+ */
 Map.prototype.openInfoWindowAtLocation = function(locationName) {
     var location = lm.getLocationByName(locationName);
 
@@ -190,10 +230,18 @@ Map.prototype.openInfoWindowAtLocation = function(locationName) {
     }
 };
 
-Map.prototype.hideLocationInfoWindow = function() {
+/**
+ * Makes the marker at the specified location active and all other markers inactive. (Active markers are green, others are red)
+ * @param {string} locationName The name of the location whose marker is to be made active
+ */
+Map.prototype.hideInfoWindow = function() {
     this.infoWindow.close();
 };
 
+/**
+ * Makes the marker at the specified location inactive (marker will be made red)
+ * @param {string} locationName The name of the location whose marker is to be made inactive
+ */
 Map.prototype.setLocationMarkerInactive = function(locationName) {
     var location = lm.getLocationByName(locationName);
     var marker = location.marker;
@@ -201,6 +249,10 @@ Map.prototype.setLocationMarkerInactive = function(locationName) {
     marker.setIcon(this._DESELECTED_MARKER_ICON);
 };
 
+/**
+ * Makes the marker passed in active and all other markers inactive. (Active markers are green, others are red)
+ * @param {string} marker The marker to be made active
+ */
 Map.prototype._setActiveMarker = function(marker) {
     for (var key in lm.locations) {
         if ( lm.locations.hasOwnProperty(key) ) {
@@ -211,6 +263,9 @@ Map.prototype._setActiveMarker = function(marker) {
     marker.setIcon(this._SELECTED_MARKER_ICON);
 };
 
+/**
+ * Creates a map marker on the map for each location in the location model
+ */
 Map.prototype._addLocationMarkers = function () {
     var self = this;
 
@@ -233,12 +288,17 @@ Map.prototype._addLocationMarkers = function () {
                     else {
                         $('#googleMap').append('<h2>Oh noes! Could not load place data from google maps for ' + location.name +'.</h2>');
                     }
-                })
+                });
             })(location);
         }
     }
 };
 
+/**
+ * Creates a map marker from a location and the result of a google place search on the location
+ * @param {?????} result The result of a google place search on the location
+ * @param {Location} location
+ */
 Map.prototype._createMapMarker = function(result, location) {
     var lat = result.geometry.location.lat(),
         lon = result.geometry.location.lng(),
@@ -256,36 +316,45 @@ Map.prototype._createMapMarker = function(result, location) {
     var infoWindowContent = '<div>' +
                                 '<h1 class="info-window-header">' + location.name + '</h1>' +
                                 '<div>' +
-                                    '<span class="info-window-icon">' + 'Address: ' + '</span>' +
+                                    '<img class="info-window-icon" src="img/infoWindowAddressIcon.png">' +
                                     '<span>' + location.getFormattedAddress()  + '</span>' +
                                 '</div>';
+    if ( location.fourSquareInfo.categories.length !== 0 ) {
+            infoWindowContent += '<div>' +
+                                    '<img class="info-window-icon" src="img/infoWindowCategoriesIcon.png" alt="Categories">' +
+                                    '<span>';
+                                    var numCategories = location.fourSquareInfo.categories.length;
+                                    for (var i = 0; i < numCategories; i++) {
+                                        infoWindowContent += location.fourSquareInfo.categories[i];
+
+                                        if (i !== numCategories - 1) {
+                                            infoWindowContent += ", ";
+                                        }
+                                    }
+            infoWindowContent +=    '</span>';
+            infoWindowContent += '</div>';
+    }
     if ( location.fourSquareInfo.phone ) {
             infoWindowContent += '<div>' +
-                                    '<span class="info-window-icon">' + 'Phone: ' + '</span>' +
-                                    '<span>' + location.fourSquareInfo.phone + '</span>' +
+                                    '<img class="info-window-icon" src="img/infoWindowPhoneIcon.png">' +
+                                    '<span>' + location.fourSquareInfo.getFormattedPhoneNumber() + '</span>' +
                                 '</div>';
     }
     if ( location.fourSquareInfo.twitter ) {
            infoWindowContent += '<div>' +
-                                    '<span class="info-window-icon">' + 'Twitter: ' + '</span>' +
+                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png"' +
                                     '<span><a href="http://www.twitter.com/' + location.fourSquareInfo.twitter + '" target="_blank">www.twitter.com/' + location.fourSquareInfo.twitter + '</a></span>' +
                                 '</div>';
     }
     if ( location.fourSquareInfo.facebookUsername ) {
            infoWindowContent += '<div>' +
-                                    '<span class="info-window-icon">' + 'Facebook: ' + '</span>' +
+                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png"' +
                                     '<span><a href="http://www.facebook.com/' + location.fourSquareInfo.facebookUsername + '" target="_blank">www.facebook.com/' + location.fourSquareInfo.facebookUsername + '</a></span>' +
                                 '</div>';
     }
-/*
-                                "<div>" +
-                                    "<span class='info-window-icon'>" + "Categories" + "</span>" +
-                                    "<span>" + "" + "</span>" +
-                                "</div>" +
-*/
     if ( location.fourSquareInfo.website ) {
            infoWindowContent += '<div>' +
-                                    '<span class="info-window-icon">' + 'Website: ' + '</span>' +
+                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png"' +
                                     '<span><a href="' + location.fourSquareInfo.website + ' target="_blank">' + location.fourSquareInfo.website + '</span>' +
                                 '</div>' +
                              '</div>';
@@ -308,10 +377,9 @@ Map.prototype._createMapMarker = function(result, location) {
     this.map.setCenter(bounds.getCenter());
 };
 
-Map.prototype.closeInfoWindow = function() {
-    this.infoWindow.close();
-};
-
+/**
+ * Initializes the google map
+ */
 function initMap() {
     ko.applyBindings( vm );
     mainMap = new Map('googleMap');
@@ -323,6 +391,9 @@ function initMap() {
     };
 }
 
+/**
+ * Alerts the user that google maps could not be loaded
+ */
 function googleMapsError() {
     alert('Oh Noes! Could not load google maps.');
 }

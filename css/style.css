@@ -80,7 +80,9 @@ main {
 }
 
 .info-window-icon {
-    margin-right: 50px;
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
 }
 
 /* Soon as header label is its own row */
