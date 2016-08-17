@@ -32,6 +32,11 @@ body {
     display: inline-block;
 }
 
+.hamburger-icon-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
 .hamburger-icon {
     width: 24px;
     height: 24px;
@@ -41,16 +46,21 @@ body {
     max-width: 24px;
     margin-left: 20px;
     margin-right: 24px;
+    align-self: center;
+}
+
+.header-label-wrapper {
+    display: flex;
+    justify-content: center;
 }
 
 .header-label {
-    /*text-align: center;*/
     margin-top: 0;
     margin-bottom: 0;
-    /*margin-left: -16.7%; */ /*This isn't quite right*/
     font-size: 28px;
+    align-self: center;
+    font-family: fantasy;
 }
-
 
 .container-in-page-content-wrapper {
     padding: 0;
@@ -58,8 +68,9 @@ body {
 }
 
 header {
-    /*height: 5%;*/
     height: 50px;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 main {

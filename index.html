@@ -26,12 +26,12 @@
         </aside>
         <div id="page-content-wrapper">
             <div class="container-in-page-content-wrapper">
-                <header style="display: flex; flex-wrap: wrap;">
-                    <div style="display: flex; justify-content: center;">
-                        <div style="align-self: center;" class="hamburger-icon" id="menu-toggle"></div>
+                <header>
+                    <div class="hamburger-icon-wrapper">
+                        <div class="hamburger-icon" id="menu-toggle"></div>
                     </div>
-                    <div style="display: flex; justify-content: center;"> <!-- TODO: Get rid of inline style -->
-                        <h1 style="align-self: center; font-family: fantasy;" class="header-label">Austin Fun Map</h1>
+                    <div class="header-label-wrapper">
+                        <h1 class="header-label">Austin Fun Map</h1>
                     </div>
                 </header>
                 <main>
@@ -39,7 +39,7 @@
                         <div class="google-map" id="googleMap"></div>
                     </div>
                 </main>
-            </div> <!-- container-fluid container-in-page-content-wrapper -->
+            </div> <!-- container-in-page-content-wrapper -->
         </div> <!-- page-content-wrapper -->
     </div> <!-- wrapper -->
 
