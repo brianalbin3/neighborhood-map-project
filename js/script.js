@@ -321,7 +321,7 @@ Map.prototype._createMapMarker = function(result, location) {
                                 '</div>';
     if ( location.fourSquareInfo.categories.length !== 0 ) {
             infoWindowContent += '<div>' +
-                                    '<img class="info-window-icon" src="img/infoWindowCategoriesIcon.png" alt="Categories">' +
+                                    '<img class="info-window-icon" src="img/infoWindowAddressIcon.png" alt="Categories">' +
                                     '<span>';
                                     var numCategories = location.fourSquareInfo.categories.length;
                                     for (var i = 0; i < numCategories; i++) {
@@ -334,28 +334,29 @@ Map.prototype._createMapMarker = function(result, location) {
             infoWindowContent +=    '</span>';
             infoWindowContent += '</div>';
     }
+    //TODO: Target is still not working
     if ( location.fourSquareInfo.phone ) {
             infoWindowContent += '<div>' +
                                     '<img class="info-window-icon" src="img/infoWindowPhoneIcon.png">' +
-                                    '<span>' + location.fourSquareInfo.getFormattedPhoneNumber() + '</span>' +
+                                    '<a href="tel:' + location.fourSquareInfo.phone + '">' + location.fourSquareInfo.getFormattedPhoneNumber() + '</a>' +
                                 '</div>';
     }
     if ( location.fourSquareInfo.twitter ) {
            infoWindowContent += '<div>' +
-                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png"' +
-                                    '<span><a href="http://www.twitter.com/' + location.fourSquareInfo.twitter + '" target="_blank">www.twitter.com/' + location.fourSquareInfo.twitter + '</a></span>' +
+                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png">' +
+                                    '<a href="http://www.twitter.com/' + location.fourSquareInfo.twitter + '" target="_blank">www.twitter.com/' + location.fourSquareInfo.twitter + '</a>' +
                                 '</div>';
     }
     if ( location.fourSquareInfo.facebookUsername ) {
            infoWindowContent += '<div>' +
-                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png"' +
-                                    '<span><a href="http://www.facebook.com/' + location.fourSquareInfo.facebookUsername + '" target="_blank">www.facebook.com/' + location.fourSquareInfo.facebookUsername + '</a></span>' +
+                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png">' +
+                                    '<a href="http://www.facebook.com/' + location.fourSquareInfo.facebookUsername + '" target="_blank">www.facebook.com/' + location.fourSquareInfo.facebookUsername + '</a>' +
                                 '</div>';
     }
     if ( location.fourSquareInfo.website ) {
            infoWindowContent += '<div>' +
-                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png"' +
-                                    '<span><a href="' + location.fourSquareInfo.website + ' target="_blank">' + location.fourSquareInfo.website + '</span>' +
+                                    '<img class="info-window-icon" src="img/infoWindowWebsiteIcon.png">' +
+                                    '<a href="' + location.fourSquareInfo.website + '" target="_blank">' + location.fourSquareInfo.website + '</a>' +
                                 '</div>' +
                              '</div>';
     }
