@@ -39,6 +39,8 @@ body {
     background-image: url('../img/hamburger-icon.svg');
     background-repeat: no-repeat;
     max-width: 24px;
+    margin-left: 20px;
+    margin-right: 24px;
 }
 
 .header-label {
@@ -46,7 +48,7 @@ body {
     margin-top: 0;
     margin-bottom: 0;
     /*margin-left: -16.7%; */ /*This isn't quite right*/
-    font-size: 24px;
+    font-size: 28px;
 }
 
 

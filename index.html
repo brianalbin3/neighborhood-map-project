@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A map of fun stuff to do in Austin, Texas.">
     <meta name="author" content="Brian Albin">
-    <title>Austin Fun</title>
+    <title>Austin Fun Map</title>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="shortcut icon" type="image/png" href="img/favicon.png">
     <link href="css/simple-sidebar.css" rel="stylesheet">
@@ -25,17 +25,17 @@
             </ul>
         </aside>
         <div id="page-content-wrapper">
-            <div class="container-fluid container-in-page-content-wrapper">
-                <header class="row-fluid">
-                    <div class="col-md-1">
-                        <div class="hamburger-icon" id="menu-toggle"></div>
+            <div class="container-in-page-content-wrapper">
+                <header style="display: flex; flex-wrap: wrap;">
+                    <div style="display: flex; justify-content: center;">
+                        <div style="align-self: center;" class="hamburger-icon" id="menu-toggle"></div>
                     </div>
-                    <div class="col-md-11" style="min-height:50px"> <!-- TODO: Get rid of inline style -->
-                        <h1 class="header-label">Austin Fun</h1>
+                    <div style="display: flex; justify-content: center;"> <!-- TODO: Get rid of inline style -->
+                        <h1 style="align-self: center; font-family: fantasy;" class="header-label">Austin Fun Map</h1>
                     </div>
                 </header>
-                <main class="row-fluid">
-                    <div class="col-md-12 google-map-wrapper">
+                <main>
+                    <div class="google-map-wrapper">
                         <div class="google-map" id="googleMap"></div>
                     </div>
                 </main>
